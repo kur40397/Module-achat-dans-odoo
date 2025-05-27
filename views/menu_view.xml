@@ -1,5 +1,5 @@
 <odoo>
-    <menuitem id="root_module_achat" name="Achat Olympe industries"/>
+    <menuitem id="root_module_achat" name="Module Achat"/>
     <!-- root pour grouper les modules en un seule endroit -->
     <menuitem id="menu_bon_commande" name="Bon de commande" parent="root_module_achat" action="action_view_bon_commande_oly"/>
 
