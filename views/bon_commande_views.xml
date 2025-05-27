@@ -1,0 +1,7 @@
+<odoo>
+   <record id="action_view_bon_commande_oly" model="ir.actions.act_window">
+       <field name="name">Bon commande</field>
+       <field name="res_model">module.achat.bon.commande</field>
+       <field name="view_mode">list,form</field>
+   </record>
+</odoo>
