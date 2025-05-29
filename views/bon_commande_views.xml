@@ -1,7 +1,54 @@
 <odoo>
-   <record id="action_view_bon_commande_oly" model="ir.actions.act_window">
-       <field name="name">Bon commande</field>
-       <field name="res_model">module.achat.bon.commande</field>
+  <record id="view_form_boncommande" model="ir.ui.view">
+      <field name="name">bon_commande.form</field>
+      <field name="model">module_achat.bon_commande</field>
+      <field name="arch" type="xml">
+          <form>
+              <sheet> <!-- sheet = la zone ou tu developpe ,    -->
+
+                    <group> <!-- pour créer une ligne horizentale-->
+                         <group> <!-- pour créer une colonne -->
+                               <field name="Numero_bon_commande"/>
+                               <field name="ref_fournisseur"/>
+                               <field name="code_projet"/>
+                               <field name="devise"/>
+                               <field name="mode_reception"/>
+                               <field name="date_bon_commande"/>
+                               <field name="date_reception"/>
+                         </group>
+                         <group>
+                              <field name="mode_paiement"/>
+                              <field name="condition_de_paiement"/>
+                              <field name="total_ht"/>
+                              <field name="total_ttc"/>
+                              <field name="state"/>
+                        </group>
+                    </group>
+
+              </sheet>
+          </form>
+      </field>
+  </record>
+    <record id="view_list_bon_commande" model="ir.ui.view">
+        <field name="name">bon_commande.list</field>
+        <field name="model">module_achat.bon_commande</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="Numero_bon_commande"/>
+                <field name="ref_fournisseur"/>
+                <field name="code_projet" widget="many2many_tags"/>
+                <field name="date_bon_commande"/>
+                <field name="date_reception"/>
+                <field name="total_ht"/>
+                <field name="total_ttc"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+   <!--  Action liée au model pour ouvrir une vue  -->
+   <record id="action_view_bon_commande" model="ir.actions.act_window">
+       <field name="name">Bon commande</field> <!--le nom de la vue-->
+       <field name="res_model">module_achat.bon_commande</field>
        <field name="view_mode">list,form</field>
    </record>
 </odoo>

@@ -1,7 +1,7 @@
 {
     'name': 'Module Achat de Olympe industries',
     'version': '1.0',
-    'depends': ['base'],
+    'depends': ['base','project'],
     'data': [
         'views/bon_commande_views.xml',
         #'views/bon_reception_views.xml',
