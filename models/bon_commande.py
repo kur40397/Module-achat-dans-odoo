@@ -25,4 +25,16 @@ class BonCommande(models.Model):
     condition_de_paiement=fields.Many2one("account.payment.term",string="Condition de paiement")
     total_ht =fields.Float(string="Total HT")
     total_ttc =fields.Float(string="Total TTC")
+    bon_commandes=fields.One2many("module_achat.ligne_bon_commande","bon_commande_id")
+
+class LigneBonCommande(models.Model):
+    _name = "module_achat.ligne_bon_commande"
+    ref_prod=fields.Integer(string="Reference produit")
+    produit_id=fields.Many2one("product.product",string="Description")
+    quantite=fields.Float(string="Quantité")
+    unite_mesure=fields.Many2one("uom.uom","unité de mesure")
+    prix_unitaire=fields.Float("Prix unitaire")
+    Total=fields.Float("Total")
+    bon_commande_id=fields.Many2one("module_achat.bon_commande")
+
 

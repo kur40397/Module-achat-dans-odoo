@@ -10,7 +10,7 @@
                          <group> <!-- pour créer une colonne -->
                                <field name="Numero_bon_commande"/>
                                <field name="ref_fournisseur"/>
-                               <field name="code_projet"/>
+                               <field name="code_projet" widget="many2many_tags"/>
                                <field name="devise"/>
                                <field name="mode_reception"/>
                                <field name="date_bon_commande"/>
@@ -24,7 +24,21 @@
                               <field name="state"/>
                         </group>
                     </group>
-
+                     <!--partie des ongles-->
+                     <notebook>
+                         <page string="Lignes de commande">
+                             <field name="bon_commandes">
+                                 <list editable="bottom">
+                                     <field name="ref_prod"/>
+                                     <field name="produit_id"/>
+                                     <field name="unite_mesure"/>
+                                     <field name="quantite"/>
+                                     <field name="prix_unitaire"/>
+                                     <field name="Total"/>
+                                 </list>
+                             </field>
+                         </page>
+                     </notebook>
               </sheet>
           </form>
       </field>
