@@ -4,32 +4,36 @@
       <field name="model">module_achat.bon_commande</field>
       <field name="arch" type="xml">
           <form>
+              <header>
+                  <button name="action_valider_formulaire" type="object" string="valider" invisible="state=='valide'"/>
+                  <field name="state" widget="statusbar"/>
+              </header>
               <sheet> <!-- sheet = la zone ou tu developpe ,    -->
 
                     <group> <!-- pour créer une ligne horizentale-->
                          <group> <!-- pour créer une colonne -->
-                               <field name="Numero_bon_commande"/>
-                               <field name="ref_fournisseur"/>
-                               <field name="code_projet" widget="many2many_tags"/>
-                               <field name="devise"/>
-                               <field name="mode_reception"/>
-                               <field name="date_bon_commande"/>
-                               <field name="date_reception"/>
+                               <field name="Numero_bon_commande" readonly="state=='valide'"/>
+                               <field name="ref_fournisseur" readonly="state=='valide'"/>
+                               <field name="code_projet" widget="many2many_tags" readonly="state=='valide'"/>
+                               <field name="devise" readonly="state=='valide'"/>
+                               <field name="mode_reception" readonly="state=='valide'"/>
+                               <field name="date_bon_commande" readonly="state=='valide'"/>
+                               <field name="date_reception" readonly="state=='valide'"/>
                          </group>
                          <group>
-                              <field name="mode_paiement"/>
-                              <field name="condition_de_paiement"/>
-                              <field name="total_ht"/>
-                              <field name="total_ttc"/>
-                              <field name="state"/>
+                              <field name="mode_paiement" readonly="state=='valide'"/>
+                              <field name="condition_de_paiement" readonly="state=='valide'"/>
+                              <field name="total_ht" readonly="state=='valide'"/>
+                              <field name="total_ttc" readonly="state=='valide'"/>
+                              <field name="state" readonly="state=='valide'"/>
                         </group>
                     </group>
                      <!--partie des ongles-->
                      <notebook>
                          <page string="Lignes de commande">
-                             <field name="bon_commandes">
+                             <field name="bon_commandes" readonly="state=='valide'">
                                  <list editable="bottom">
-                                     <field name="ref_prod"/>
+                                     <field name="ref_prod" />
                                      <field name="produit_id"/>
                                      <field name="unite_mesure"/>
                                      <field name="quantite"/>

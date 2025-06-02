@@ -21,11 +21,23 @@ class BonCommande(models.Model):
         ("especes","Espèces"),
         ("cheque","Chèque"),
         ("carte_bancaire","Carte bancaire")
-    ],string="Mode paiement")
+    ],string="Mode paiement",copy=False)
     condition_de_paiement=fields.Many2one("account.payment.term",string="Condition de paiement")
     total_ht =fields.Float(string="Total HT")
     total_ttc =fields.Float(string="Total TTC")
     bon_commandes=fields.One2many("module_achat.ligne_bon_commande","bon_commande_id")
+
+    def action_valider_formulaire(self):
+       self.write(
+           {
+               "state":"valide"
+           }
+       )
+
+
+
+
+
 
 class LigneBonCommande(models.Model):
     _name = "module_achat.ligne_bon_commande"
