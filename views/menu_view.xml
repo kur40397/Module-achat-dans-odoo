@@ -2,5 +2,6 @@
     <menuitem id="root_module_achat" name="Module Achat"/>
     <!-- root pour grouper les modules en un seule endroit -->
     <menuitem id="menu_bon_commande" name="Bon de commande" parent="root_module_achat" action="action_view_bon_commande"/>
+    <menuitem id="menu_bon_reception" name="bon de reception" parent="root_module_achat" action="action_view_module_achat_bon_reception"/>
 
 </odoo>

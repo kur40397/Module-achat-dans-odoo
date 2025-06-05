@@ -5,7 +5,8 @@
       <field name="arch" type="xml">
           <form>
               <header>
-                  <button name="action_valider_formulaire" type="object" string="valider" invisible="state=='valide'"/>
+                  <button name="action_valider_formulaire" type="object" string="valider" invisible="state=='valide'"  class="oe_highlight"/>
+                  <button name="action_creer_bon_reception" type="object" string="bon réception" invisible="state!='valide'" />
                   <field name="state" widget="statusbar"/>
               </header>
               <sheet> <!-- sheet = la zone ou tu developpe ,    -->
@@ -14,7 +15,7 @@
                          <group> <!-- pour créer une colonne -->
                                <field name="Numero_bon_commande" readonly="state=='valide'"/>
                                <field name="ref_fournisseur" readonly="state=='valide'"/>
-                               <field name="code_projet" widget="many2many_tags" readonly="state=='valide'"/>
+                               <field name="code_projet"  readonly="state=='valide'"/>
                                <field name="devise" readonly="state=='valide'"/>
                                <field name="mode_reception" readonly="state=='valide'"/>
                                <field name="date_bon_commande" readonly="state=='valide'"/>
@@ -31,14 +32,14 @@
                      <!--partie des ongles-->
                      <notebook>
                          <page string="Lignes de commande">
-                             <field name="bon_commandes" readonly="state=='valide'">
+                             <field name="ligne_bon_commandes_ids" readonly="state=='valide'">
                                  <list editable="bottom">
                                      <field name="ref_prod" />
                                      <field name="produit_id"/>
                                      <field name="unite_mesure"/>
                                      <field name="quantite"/>
                                      <field name="prix_unitaire"/>
-                                     <field name="Total"/>
+                                     <field name="prix_ht"/>
                                  </list>
                              </field>
                          </page>
@@ -54,7 +55,7 @@
             <list>
                 <field name="Numero_bon_commande"/>
                 <field name="ref_fournisseur"/>
-                <field name="code_projet" widget="many2many_tags"/>
+                <field name="code_projet" />
                 <field name="date_bon_commande"/>
                 <field name="date_reception"/>
                 <field name="total_ht"/>

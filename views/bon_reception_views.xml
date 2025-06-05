@@ -1,0 +1,52 @@
+<odoo>
+  <data>
+  <record id="view_form_module_achat_bon_reception" model="ir.ui.view">
+    <field name="name">bon_reception.view</field>
+    <field name="model">module_achat.bon_reception</field>
+    <field name="arch"  type="xml">
+      <form>
+          <header>
+              <button name="valider_bon_reception" type="object" string="valider" invisible="state=='recu'"  class="oe_highlight"/>
+              <button name="creer_ligne_stock" type="object" string="Stock" invisible="state!='recu'"/>
+              <field name="state" widget="statusbar"/>
+          </header>
+         <sheet>
+           <group>
+             <group>
+               <field name="ref_bon_reception" readonly="state=='recu'"/>
+               <field name="bon_commande_id" readonly="state=='recu'"/>
+               <field name="fournisseur" readonly="state=='recu'"/>
+               <field name="state" readonly="state=='recu'"/>
+             </group>
+             <group>
+                 <field name="date_reception" readonly="state=='recu'"/>
+                 <field name="type_operation" readonly="state=='recu'"/>
+                 <field name="controle_reception" readonly="state=='recu'"/>
+                 <field name="projet_id" readonly="state=='recu'"/>
+             </group>
+           </group>
+           <notebook>
+              <page string="Ligne de bon de réception">
+                <field name="ligne_bon_receptions_ids" readonly="state=='recu'">
+                  <list editable="bottom">
+                       <field name="ref_produit"  />
+                       <field name="produit_id" />
+                       <field name="quantite_demandee" />
+                       <field name="quantite_recue"/>
+                       <field name="reste"/>
+                  </list>
+                </field>
+              </page>
+           </notebook>
+         </sheet>
+      </form>
+    </field>
+  </record>
+  <record id="action_view_module_achat_bon_reception" model="ir.actions.act_window">
+    <!-- provoque l'ouverture d'une fenêtre -->
+    <field name="name">Bon réception</field>
+    <field name="res_model">module_achat.bon_reception</field>
+    <field name="view_mode">form</field>
+  </record>
+</data>
+</odoo>
