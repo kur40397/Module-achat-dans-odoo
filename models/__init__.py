@@ -1,1 +1,1 @@
-from . import  bon_commande,bon_reception
+from . import  bon_commande,bon_reception,ligne_stock

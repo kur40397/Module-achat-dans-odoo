@@ -7,16 +7,26 @@
       <form>
           <header>
               <button name="valider_bon_reception" type="object" string="valider" invisible="state=='recu'"  class="oe_highlight"/>
-              <button name="creer_ligne_stock" type="object" string="Stock" invisible="state!='recu'"/>
               <field name="state" widget="statusbar"/>
           </header>
          <sheet>
+               <div class="oe_button_box" name="button_box" invisible="state!='recu'">
+                       <button
+                               name="action_open_stock"
+                               type="object"
+                               class="oe_stat_button"
+                               icon="fa-truck"
+                       >
+                         <field name="count_ligne_stock" widget="statinfo" string="Ligne stock"/>
+                           <!-- statinfo  pour affiché le compteur dans le bouton-->
+                       </button>
+               </div>
            <group>
              <group>
                <field name="ref_bon_reception" readonly="state=='recu'"/>
                <field name="bon_commande_id" readonly="state=='recu'"/>
                <field name="fournisseur" readonly="state=='recu'"/>
-               <field name="state" readonly="state=='recu'"/>
+               <field name="location_id" readonly="state=='recu'"/>
              </group>
              <group>
                  <field name="date_reception" readonly="state=='recu'"/>
@@ -42,11 +52,26 @@
       </form>
     </field>
   </record>
+  <record id="view_list_module_achat_bon_reception" model="ir.ui.view">
+          <field name="name">bon_reception.list</field>
+          <field name="model">module_achat.bon_reception</field>
+          <field name="arch"  type="xml">
+              <list>
+                 <field name="ref_bon_reception"/>
+                 <field name="bon_commande_id" />
+                 <field name="fournisseur" />
+                 <field name="location_id" />
+                 <field name="controle_reception" />
+                 <field name="projet_id"/>
+                 <field name="date_reception" />
+              </list>
+          </field>
+  </record>
   <record id="action_view_module_achat_bon_reception" model="ir.actions.act_window">
     <!-- provoque l'ouverture d'une fenêtre -->
     <field name="name">Bon réception</field>
     <field name="res_model">module_achat.bon_reception</field>
-    <field name="view_mode">form</field>
+    <field name="view_mode">list,form</field>
   </record>
 </data>
 </odoo>

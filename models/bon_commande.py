@@ -31,7 +31,7 @@ class BonCommande(models.Model):
     tva=fields.Float(default=0.2)
     total_ttc =fields.Float(string="Total TTC",compute="_compute_total")
     ligne_bon_commandes_ids=fields.One2many("module_achat.ligne_bon_commande","bon_commande_id")
-
+    count_bon_reception=fields.Integer(compute="_compute_count_bon_reception")
     bon_reception_ids=fields.One2many("module_achat.bon_reception","bon_commande_id")
 
     def action_valider_formulaire(self):
@@ -51,8 +51,15 @@ class BonCommande(models.Model):
            else:
               rec.total_ttc=rec.total_ht
 
-    def action_creer_bon_reception(self):
-        self.ensure_one() # forcer d'avoir un seule enregistrement
+
+    def _compute_count_bon_reception(self):
+        self.count_bon_reception=len(self.bon_reception_ids)
+
+    def action_open_receptions(self):
+        self.ensure_one()
+        action=self.env.ref("Module_Achat.action_view_module_achat_bon_reception",raise_if_not_found=False).read()[0]
+
+        action['domain']=[('bon_commande_id', '=', self.id)]
         list=[]
         for rec in self.ligne_bon_commandes_ids:
             # le premier 0 ===> ajouter le deuxième 0
@@ -63,15 +70,14 @@ class BonCommande(models.Model):
                 'quantite_demandee':rec.quantite
             }))
         type_operation=self.env['stock.picking.type'].search([('name','=','Réceptions')]).id
-        action=self.env.ref('Module_Achat.action_view_module_achat_bon_reception',raise_if_not_found=False).read()[0]
-        action['context']= {
-           'default_date_reception': date.today(),
-           'default_bon_commande_id': self.id,
-           'default_fournisseur': self.ref_fournisseur.id,
-           'default_type_operation': type_operation,
-           'default_projet_id': self.code_projet.id,
-           'default_ligne_bon_receptions_ids':list
-         }
+        action['context'] = {
+            'default_date_reception': date.today(),
+            'default_bon_commande_id': self.id,
+            'default_fournisseur': self.ref_fournisseur.id,
+            'default_type_operation': type_operation,
+            'default_projet_id': self.code_projet.id,
+            'default_ligne_bon_receptions_ids': list
+        }
         return action
 
 

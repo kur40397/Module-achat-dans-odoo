@@ -6,10 +6,25 @@
           <form>
               <header>
                   <button name="action_valider_formulaire" type="object" string="valider" invisible="state=='valide'"  class="oe_highlight"/>
-                  <button name="action_creer_bon_reception" type="object" string="bon réception" invisible="state!='valide'" />
                   <field name="state" widget="statusbar"/>
               </header>
               <sheet> <!-- sheet = la zone ou tu developpe ,    -->
+                  <!-- oe_button_box pour stilisé la zone qui regroupe les smart buttons -->
+                  <!-- button_box : un repère pour permettre a odoo de placer ces button dans le haut du formulaire -->
+                   <!--Type:object: appelle une méthode quand je clique le boutton -->
+
+                  <div class="oe_button_box" name="button_box" invisible="state!='valide'">
+                       <button
+                               name="action_open_receptions"
+                               type="object"
+                               class="oe_stat_button"
+                               icon="fa-truck"
+                       >
+                         <field name="count_bon_reception" widget="statinfo" string="Bon de reception"/>
+                           <!-- statinfo  pour affiché le compteur dans le bouton-->
+                       </button>
+
+                  </div>
 
                     <group> <!-- pour créer une ligne horizentale-->
                          <group> <!-- pour créer une colonne -->
