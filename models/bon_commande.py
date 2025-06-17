@@ -6,7 +6,7 @@ from odoo.exceptions import UserError
 
 class BonCommande(models.Model):
     _name = "module_achat.bon_commande"
-    Numero_bon_commande=fields.Char(string="Numero bon commande")
+    numero_bon_commande=fields.Char(string="Numero bon commande")
     ref_fournisseur=fields.Many2one("res.partner",string="Fournisseur")
     code_projet=fields.Many2one("project.project",string="Projet")
     devise =fields.Many2one("res.currency","Devise")
@@ -33,13 +33,55 @@ class BonCommande(models.Model):
     ligne_bon_commandes_ids=fields.One2many("module_achat.ligne_bon_commande","bon_commande_id")
     count_bon_reception=fields.Integer(compute="_compute_count_bon_reception")
     bon_reception_ids=fields.One2many("module_achat.bon_reception","bon_commande_id")
+    has_reliquat=fields.Selection([
+        ('true', 'Avec reliquat'),
+        ('false', 'Aucun reliquat')
+    ],compute="_compute_reliquat",string="État des reliquats",default='false')
+
+    @api.depends("bon_reception_ids")
+    def _compute_reliquat(self):
+        for rec in self:
+          if rec.bon_reception_ids:
+              is_cmd_has_reliquat=rec.bon_reception_ids[0]
+              if is_cmd_has_reliquat:
+                  rec.has_reliquat='true'
+              else:
+                  rec.has_reliquat = 'false'
+          else:
+              rec.has_reliquat = 'false'
+
+    def action_imprimer_bon_commande(self):
+        pass
+
+
 
     def action_valider_formulaire(self):
+       if not self.ligne_bon_commandes_ids:
+          raise UserError("Veuillez ajouter des lignes de commande")
        self.write(
            {
                "state":"valide"
            }
        )
+       ligne_vals=[]
+       for rec in self.ligne_bon_commandes_ids:
+           # le premier 0 ===> ajouter le deuxième 0
+           # le deuxième 0 ==> l'id de l'enregistrement
+           ligne_vals.append((0, 0, {
+               'ref_produit': rec.ref_prod,
+               'produit_id': rec.produit_id.id,
+               'quantite_demandee': rec.quantite
+           }))
+       type_operation = self.env['stock.picking.type'].search([('name', '=', 'Réceptions')]).id
+       self.env['module_achat.bon_reception'].create({
+           'date_reception': date.today(),
+           'bon_commande_id': self.id,
+           'fournisseur': self.ref_fournisseur.id,
+           'type_operation': type_operation,
+           'projet_id': self.code_projet.id,
+           'ligne_bon_receptions_ids': ligne_vals,
+       })
+
     @api.depends("ligne_bon_commandes_ids")
     def _compute_total(self):
         for rec in self:
@@ -60,24 +102,8 @@ class BonCommande(models.Model):
         action=self.env.ref("Module_Achat.action_view_module_achat_bon_reception",raise_if_not_found=False).read()[0]
 
         action['domain']=[('bon_commande_id', '=', self.id)]
-        list=[]
-        for rec in self.ligne_bon_commandes_ids:
-            # le premier 0 ===> ajouter le deuxième 0
-            # le deuxième 0 ==> l'id de l'enregistrement
-            list.append((0,0,{
-                'ref_produit':rec.ref_prod,
-                'produit_id':rec.produit_id.id,
-                'quantite_demandee':rec.quantite
-            }))
-        type_operation=self.env['stock.picking.type'].search([('name','=','Réceptions')]).id
-        action['context'] = {
-            'default_date_reception': date.today(),
-            'default_bon_commande_id': self.id,
-            'default_fournisseur': self.ref_fournisseur.id,
-            'default_type_operation': type_operation,
-            'default_projet_id': self.code_projet.id,
-            'default_ligne_bon_receptions_ids': list
-        }
+
+
         return action
 
 

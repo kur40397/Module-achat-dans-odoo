@@ -1,5 +1,39 @@
 <odoo>
   <data>
+      <record id="view_search_module_achat_bon_reception" model="ir.ui.view">
+          <field name="name">module_achat.bon_reception.search</field>
+          <field name="model">module_achat.bon_reception</field>
+          <field name="arch" type="xml">
+              <search string="Recherche bon de reception">
+                <!-- Champs de recherche -->
+                  <field name="ref_bon_reception" string="Numéro de bon de reception" />
+                  <field name="bon_commande_id" string="Numéro de bon de commande" />
+                  <field name="fournisseur" string="Fournisseur" />
+                  <filter name="location_id" string="Emplacement stock"/>
+                  <!-- Filtres rapides -->
+                  <!-- Filter rapide control -->
+                  <filter name="filter_controle_reception_conforme" string="reception conforme" domain="[('controle_reception','like','conforme')]"/>
+                  <filter name="filter_controle_reception_non_conforme" string="reception non conforme" domain="[('controle_reception','like','non_conforme')]"/>
+                  <filter name="filter_controle_reception_partiel" string="reception partiel" domain="[('controle_reception','like','partiel')]"/>
+                   <separator/>
+                  <!-- Filter state -->
+                  <filter name="filter_state_brouillon" string="Brouillon" domain="[('state','=','brouillon')]"/>
+                  <filter name="filter_state_recu" string="Recu" domain="[('state','=','recu')]"/>
+                   <separator/>
+                  <!-- Filter has_reliquat -->
+                  <filter name="has_reliquat" string="Reliquat" domain="[('has_reliquat','=','True')]"/>
+                  <filter name="has_no_reliquat" string="Pas de reliquat" domain="[('has_reliquat','=','False')]"/>
+                  <!-- group by -->
+                  <group expand="1" string="Group by">
+                    <filter name="group_by_bon_commande_id" string="group par commande" context="{'group_by':'bon_commande_id'}"/>
+                    <filter name="group_controle_reception" string="group par controle_reception" context="{'group_by':'controle_reception'}" />
+                    <filter name="group_by_projet_id" string="group par projet_id" context="{'group_by':'projet_id'}"/>
+                    <filter name="group_by_state" string="group par etat" context="{'group_by':'state'}"/>
+                    <filter name="group_by_has_reliquat" string="group par reliquat" context="{'group_by':'has_reliquat'}"/>
+                  </group>
+              </search>
+          </field>
+      </record>
   <record id="view_form_module_achat_bon_reception" model="ir.ui.view">
     <field name="name">bon_reception.view</field>
     <field name="model">module_achat.bon_reception</field>
@@ -7,6 +41,8 @@
       <form>
           <header>
               <button name="valider_bon_reception" type="object" string="valider" invisible="state=='recu'"  class="oe_highlight"/>
+              <button name="creer_reliquat" type="object" string="creer reliquat" invisible="not has_reliquat" />
+
               <field name="state" widget="statusbar"/>
           </header>
          <sheet>
@@ -56,7 +92,7 @@
           <field name="name">bon_reception.list</field>
           <field name="model">module_achat.bon_reception</field>
           <field name="arch"  type="xml">
-              <list>
+              <list create="false" >
                  <field name="ref_bon_reception"/>
                  <field name="bon_commande_id" />
                  <field name="fournisseur" />
@@ -64,6 +100,7 @@
                  <field name="controle_reception" />
                  <field name="projet_id"/>
                  <field name="date_reception" />
+                 <field name="state" widget="badge" />
               </list>
           </field>
   </record>

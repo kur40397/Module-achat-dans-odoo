@@ -1,4 +1,27 @@
 <odoo>
+    <record id="view_search_ligne_stock" model="ir.ui.view">
+        <field name="name">ligne_stock.search</field>
+        <field name="model">module_achat.ligne_stock</field>
+        <field name="arch" type="xml">
+            <search>
+                <!-- les champs de recherche -->
+                <field name="ref_ligne_Stock"/>
+                <field name="bon_reception_id"/>
+                <field name="produit_id" />
+
+
+
+                <!-- filtre rapide -->
+                <group expand="1" string="Group by">
+                    <filter name="group_by_bon_reception" string="bon de reception" context="{'group_by':'bon_reception_id'}" />
+                    <filter name="group_by_produit" string="nom du produit" context="{'group_by':'produit_id'}" />
+                    <filter name="group_by_location_id" string="emplacement" context="{'group_by':'location_id'}" />
+                    <filter name="group_by_type_mouvement" string="mouvement" context="{'group_by':'type_mouvement'}" />
+                </group>
+            </search>
+
+        </field>
+    </record>
     <record id="view_list_ligne_stock" model="ir.ui.view">
         <field name="name">ligne_stock.list</field>
         <field name="model">module_achat.ligne_stock</field>
@@ -8,10 +31,9 @@
                 <field name="bon_reception_id"/>
                 <field name="produit_id" />
                 <field name="location_id" />
-                <field name="type_mouvement" />
+                <field name="type_mouvement"  />
                 <field name="quantite" />
                 <field name="date" />
-
             </list>
         </field>
     </record>

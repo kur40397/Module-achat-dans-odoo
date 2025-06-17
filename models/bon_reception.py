@@ -1,7 +1,7 @@
 from odoo import models , fields,api
 from datetime import date
 
-from odoo.exceptions import ValidationError
+from odoo.exceptions import  UserError
 
 
 class bonReception(models.Model):
@@ -24,50 +24,77 @@ class bonReception(models.Model):
     location_id = fields.Many2one('stock.location', string="Emplacement")
     ligne_bon_receptions_ids=fields.One2many("module_achat.ligne_bon_reception","bon_reception_id")
     ligne_stock_ids=fields.One2many("module_achat.ligne_stock","bon_reception_id")
-    count_ligne_stock=fields.Integer(computer="_compute_count_ligne_stock")
+    count_ligne_stock=fields.Integer(compute="_compute_count_ligne_stock")
     has_reliquat=fields.Boolean(default=False)
-    has_reliquat_xml=fields.Char(default="false")
-
-
-
-
-
-
 
     def valider_bon_reception(self):
+        qte_recue=self.ligne_bon_receptions_ids.mapped('quantite_recue')
+        if sum(qte_recue)==0:
+            raise UserError("Veuillez saisir le reste au moin d'un produit")
+        else:
+            self.has_reliquat = True
+
         self.write({
-            'state':'recu'
+            'state': 'recu'
         })
-        for rec in self.ligne_bon_receptions_ids:
-            if rec.quantite_recue > 0:
-                self.has_reliquat = True
-                self.has_reliquat_xml='true'
-                return
-
-
-
-
-
-    def _compute_count_ligne_stock(self):
-       self.count_ligne_stock=len(self.ligne_stock_ids)
-
-    def action_open_stock(self):
-        self.ensure_one()
-        action=self.env.ref("Module_Achat.action_view_ligne_stock",raise_if_not_found=False).read()[0]
-        action['domain'] = [('bon_reception_id', '=', self.id)]
         type_mouvement = self.type_operation.id,
         location = self.location_id.id
         for rec in self.ligne_bon_receptions_ids:
-            self.env['module_achat.ligne_stock'].create(
-                {
+            if rec.quantite_recue>0:
+                self.env['module_achat.ligne_stock'].create(
+                  {
                     'produit_id': rec.produit_id.id,
                     'bon_reception_id': self.id,
                     'quantite': rec.quantite_recue,
                     'type_mouvement': type_mouvement,
                     'location_id': location,
                     'date': date.today()
+                  }
+                )
+        for rec in self.ligne_bon_receptions_ids:
+            if rec.reste > 0:
+                self.has_reliquat = True
+                return
+
+
+    def creer_reliquat(self):
+        self.has_reliquat = False
+        action = self.env.ref("Module_Achat.action_view_module_achat_bon_reception", raise_if_not_found=False).read()[0]
+        action['domain'] = [('bon_commande_id', '=', self.bon_commande_id.id)]
+        list=[]
+        for rec in self.ligne_bon_receptions_ids:
+            # le premier 0 ===> ajouter le deuxième 0
+            # le deuxième 0 ==> l'id de l'enregistrement
+            if rec.reste > 0:
+                list.append((0, 0, {
+                    'ref_produit': rec.ref_produit,
+                    'produit_id': rec.produit_id.id,
+                    'quantite_demandee': rec.reste
                 }
-            )
+                             ))
+        type_operation = self.env['stock.picking.type'].search([('name', '=', 'Réceptions')]).id
+        self.env['module_achat.bon_reception'].create({
+            'date_reception': date.today(),
+            'bon_commande_id': self.bon_commande_id.id,
+            'fournisseur': self.fournisseur.id,
+            'type_operation': type_operation,
+            'projet_id': self.projet_id.id,
+            "location_id":self.location_id.id,
+            "controle_reception":self.controle_reception,
+            'ligne_bon_receptions_ids': list,
+        })
+        return action
+
+    @api.depends("ligne_stock_ids")
+    def _compute_count_ligne_stock(self):
+
+       self.count_ligne_stock=len(self.ligne_stock_ids)
+
+    def action_open_stock(self):
+        self.ensure_one()
+        action=self.env.ref("Module_Achat.action_view_ligne_stock",raise_if_not_found=False).read()[0]
+        action['domain'] = [('bon_reception_id', '=', self.id)]
+
         return action
 
 
