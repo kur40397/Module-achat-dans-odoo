@@ -4,5 +4,5 @@
     <menuitem id="menu_bon_commande" name="Bon de commande" parent="root_module_achat" action="action_view_bon_commande"/>
     <menuitem id="menu_bon_reception" name="bon de reception" parent="root_module_achat" action="action_view_module_achat_bon_reception"/>
     <menuitem id="menu_bon_stock" name="Lignes de stock" parent="root_module_achat" action="action_view_ligne_stock"/>
-
+    <menuitem id="menu_produit" name="Produits" parent="root_module_achat" action="action_view_produit_prix_fournisseurs"/>
 </odoo>

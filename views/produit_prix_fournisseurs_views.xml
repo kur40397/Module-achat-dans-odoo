@@ -1,0 +1,80 @@
+
+<odoo>
+<record id="view_form_le_produit_prix_fournisseur" model="ir.ui.view">
+    <field name="name">module_achat.product.template.form</field>
+    <field name="model">product.template</field>
+    <field name="priority">120</field>
+    <field name="arch" type="xml">
+        <form>
+            <header>
+                 <button name="valider_produit" type="object" string="valider" invisible="state == 'valide'" class="oe_highlight" />
+                <field name="state" widget="statusbar" />
+
+            </header>
+            <sheet>
+                   <div class="oe_title">
+                        <field name="name" readonly="state == 'valide'"/>
+                        <field name="image_1920" widget="image" class="oe_avatar" readonly="state == 'valide'"/>
+                    </div>
+                <group>
+
+                    <group>
+
+                        <field name="default_code" readonly="state == 'valide'"/>
+                        <field name="type" readonly="state == 'valide'"/>
+                        <field name="uom_po_id" readonly="state == 'valide'"/>
+                    </group>
+                    <group>
+                        <field name="norme" readonly="state == 'valide'"/>
+                        <field name="categ_id" readonly="state == 'valide'"/>
+                        <field name="weight" readonly="state == 'valide'"/>
+                        <field name="volume" readonly="state == 'valide'"/>
+                    </group>
+                </group>
+                <notebook>
+                    <page name="Prix fournisseurs">
+                         <field name="prix_fournisseur_ids" readonly="state == 'valide'" >
+                           <list editable="bottom">
+                             <field name="ref_fournisseur" />
+                             <field name="prix_unitaire" />
+                             <field name="devise_id" />
+                           </list>
+                         </field>
+
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+
+</record>
+    <record id="view_list_produit_prix_fournisseurs" model="ir.ui.view">
+         <field name="name">module_achat.product.template.list</field>
+         <field name="model">product.template</field>
+         <field name="arch" type="xml">
+            <list>
+             <field name="name"/>
+             <field name="default_code"/>
+             <field name="norme"/>
+             <field name="categ_id"/>
+             <field name="weight"/>
+             <field name="volume"/>
+             <field name="state" widget="badge"/>
+            </list>
+         </field>
+    </record>
+
+
+
+    <!--action liée au model pour ouvrir une vue-->
+    <record id="action_view_produit_prix_fournisseurs" model="ir.actions.act_window">
+        <field name="name">Produits Fournisseur</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+       <field name="view_ids" eval="[
+        (5, 0, 0),
+        (0, 0, {'view_mode': 'list', 'view_id': ref('view_list_produit_prix_fournisseurs')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('view_form_le_produit_prix_fournisseur')})
+    ]"/>
+    </record>
+</odoo>
