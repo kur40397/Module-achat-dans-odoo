@@ -21,6 +21,9 @@
                    <filter name="etat_draft" string="Etat draft" domain="[('state','=','draft')]"/>
                    <filter name="etat_valide" string="Etat valide" domain="[('state','=','valide')]"/>
 
+                   <filter name="reliquat" string="avec reliquat" domain="[('has_reliquat','=','true')]"/>
+                   <filter name="no_reliquat" string="sans reliquat" domain="[('has_reliquat','=','false')]"/>
+
                    <filter name="mode_paiement_virement_bancaire" string="Mode paiement par virement bancaire" domain="[('mode_paiement','=','virement_bancaire')]"/>
                    <filter name="mode_paiement_especes" string="Mode paiement par espèces" domain="[('mode_paiement','=','especes')]"/>
                    <filter name="mode_paiement_cheque" string="Mode paiement par chèque" domain="[('mode_paiement','=','cheque')]"/>

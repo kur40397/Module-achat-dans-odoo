@@ -36,7 +36,7 @@ class BonCommande(models.Model):
     has_reliquat=fields.Selection([
         ('true', 'Avec reliquat'),
         ('false', 'Aucun reliquat')
-    ],compute="_compute_reliquat",string="État des reliquats",default='false')
+    ],compute="_compute_reliquat",string="État des reliquats",default='false',store=True)
 
     @api.depends("bon_reception_ids")
     def _compute_reliquat(self):
@@ -56,8 +56,24 @@ class BonCommande(models.Model):
 
 
     def action_valider_formulaire(self):
+
+       if not self.ref_fournisseur:
+           raise UserError("Veuillez ajouter le fournisseur")
+       if not self.code_projet:
+           raise UserError("Veuillez ajouter le code projet")
+       if not self.date_bon_commande:
+           raise UserError("Veuillez ajouter la date de commande")
+       if not self.date_reception :
+           raise UserError("Veuillez ajouter la date de reception")
+       if  self.date_reception < self.date_bon_commande :
+           raise UserError("La date de bon de commande doit être inférieure ou égale à la date de réception")
        if not self.ligne_bon_commandes_ids:
           raise UserError("Veuillez ajouter des lignes de commande")
+       else:
+           for ligne_cmd in self.ligne_bon_commandes_ids:
+             if not ligne_cmd.produit_id or ligne_cmd.quantite == 0 or ligne_cmd.prix_unitaire==0:
+               raise UserError("chaque ligne doit avoire une quantité , une quantité et un prix unitaire ")
+
        self.write(
            {
                "state":"valide"
