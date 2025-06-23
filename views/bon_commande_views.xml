@@ -71,6 +71,8 @@
                   </div>
 
                     <group> <!-- pour créer une ligne horizentale-->
+
+                        <field name="type_commande" widget="radio" options="{'horizontal': true}" />
                          <group> <!-- pour créer une colonne -->
                                <field name="numero_bon_commande" readonly="state=='valide'"/>
                                <field name="ref_fournisseur" readonly="state=='valide'"/>
@@ -83,8 +85,13 @@
                               <field name="mode_paiement" readonly="state=='valide'"/>
                               <field name="devise" readonly="state=='valide'"/>
                               <field name="condition_de_paiement" readonly="state=='valide'"/>
-                              <field name="total_ht" readonly="state=='valide'"/>
-                              <field name="total_ttc" readonly="state=='valide'"/>
+                             <!-- bc national-->
+                              <field name="total_ht" readonly="state=='valide'" invisible="type_commande=='international'"/>
+                              <field name="total_ttc" readonly="state=='valide'" invisible="type_commande=='international'" />
+                              <!-- bc international-->
+                              <field name="Incoterm" readonly="state=='valide'" invisible="type_commande=='local'" />
+                              <field name="charge_internationales" readonly="state=='valide'" invisible="type_commande=='local'" />
+                              <field name="total_internationales" readonly="state=='valide'" invisible="type_commande=='local'" />
                         </group>
                     </group>
                      <!--partie des ongles-->

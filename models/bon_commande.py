@@ -10,6 +10,7 @@ class BonCommande(models.Model):
     ref_fournisseur=fields.Many2one("res.partner",string="Fournisseur")
     code_projet=fields.Many2one("project.project",string="Projet")
     devise =fields.Many2one("res.currency","Devise")
+
     mode_reception =fields.Selection(selection=[
         ("global","Globale"),
         ("partielle","Partielle")
@@ -27,9 +28,9 @@ class BonCommande(models.Model):
         ("carte_bancaire","Carte bancaire")
     ],string="Mode paiement",copy=False)
     condition_de_paiement=fields.Many2one("account.payment.term",string="Condition de paiement")
-    total_ht =fields.Float(string="Total HT",compute="_compute_total")
+    total_ht =fields.Float(string="Total HT",compute="_compute_total",store=True)
     tva=fields.Float(default=0.2)
-    total_ttc =fields.Float(string="Total TTC",compute="_compute_total")
+    total_ttc =fields.Float(string="Total TTC",compute="_compute_total",store=True)
     ligne_bon_commandes_ids=fields.One2many("module_achat.ligne_bon_commande","bon_commande_id")
     count_bon_reception=fields.Integer(compute="_compute_count_bon_reception")
     bon_reception_ids=fields.One2many("module_achat.bon_reception","bon_commande_id")
@@ -37,6 +38,13 @@ class BonCommande(models.Model):
         ('true', 'Avec reliquat'),
         ('false', 'Aucun reliquat')
     ],compute="_compute_reliquat",string="État des reliquats",default='false',store=True)
+    type_commande = fields.Selection(selection=[
+        ("local", "bon de commande local"),
+        ("international", "bon de commande international")
+    ], default="local",string="Type de commande")
+    Incoterm=fields.Many2one("account.incoterms",string="Incoterm")
+    charge_internationales=fields.Float(string="Charge internationales")
+    total_internationales=fields.Float(string="Total international")
 
     @api.depends("bon_reception_ids")
     def _compute_reliquat(self):
@@ -104,10 +112,8 @@ class BonCommande(models.Model):
            rec.total_ht=sum(rec.ligne_bon_commandes_ids.mapped("prix_ht"))
            # mapped : sert a récupérer une liste de valeurs a partir d'un
            # ensemble d'enregistrement il suffit juste de préciser le champ
-           if rec.devise.name=='MAD':
-              rec.total_ttc= rec.total_ht*0.2 +rec.total_ht
-           else:
-              rec.total_ttc=rec.total_ht
+           rec.total_ttc= rec.total_ht*0.2 +rec.total_ht
+
 
 
     def _compute_count_bon_reception(self):
