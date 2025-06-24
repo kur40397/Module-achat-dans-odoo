@@ -15,24 +15,36 @@ class bonReception(models.Model):
         ('conforme', 'Conforme'),
         ('non_conforme', 'Non conforme'),
         ('partiel', 'Partiellement conforme'),
-    ], string="Contrôle réception")
+    ], string="Contrôle réception",required=True)
     projet_id=fields.Many2one("project.project",string="projet")
     state=fields.Selection([
         ('brouillon','Brouillon'),
         ('recu','reçu')
     ],default='brouillon')
-    location_id = fields.Many2one('stock.location', string="Emplacement")
+
+    location_id = fields.Many2one('stock.location', string="Emplacement",required=True)
     ligne_bon_receptions_ids=fields.One2many("module_achat.ligne_bon_reception","bon_reception_id")
     ligne_stock_ids=fields.One2many("module_achat.ligne_stock","bon_reception_id")
     count_ligne_stock=fields.Integer(compute="_compute_count_ligne_stock")
     has_reliquat=fields.Boolean(default=False)
 
     def valider_bon_reception(self):
+        erreur=[]
         qte_recue=self.ligne_bon_receptions_ids.mapped('quantite_recue')
         if sum(qte_recue)==0:
-            raise UserError("Veuillez saisir le reste au moin d'un produit")
-        else:
-            self.has_reliquat = True
+            erreur.append("Veuillez saisir le reste au moin d'un produit")
+        for rec in self.ligne_bon_receptions_ids:
+            if rec.quantite_recue < 0:
+                erreur.append("la quantité recu doit être positive")
+            if rec.reste < 0:
+                erreur.append("la quantité recu doit être inférieure ou égale a la quantité demandé")
+
+        if len(erreur)!=0:
+            # le "\n" est un séparateur entre chaque deux elements par traja3hom une liste
+            # la concaténation en rendent le caractère comme un séparateur
+            raise UserError("\n".join(erreur))
+
+        self.has_reliquat = True
 
         self.write({
             'state': 'recu'
@@ -88,12 +100,17 @@ class bonReception(models.Model):
     @api.depends("ligne_stock_ids")
     def _compute_count_ligne_stock(self):
 
-       self.count_ligne_stock=len(self.ligne_stock_ids)
+
+       self.count_ligne_stock=len(self.bon_commande_id.bon_reception_ids.mapped("ligne_stock_ids"))
+       # parcours chaque bon_reception dans la liste récupère toute les ligne de stock et les fusionnee en un seule record set
+       print(self.bon_commande_id.bon_reception_ids.ligne_stock_ids)
+
 
     def action_open_stock(self):
         self.ensure_one()
         action=self.env.ref("Module_Achat.action_view_ligne_stock",raise_if_not_found=False).read()[0]
-        action['domain'] = [('bon_reception_id', '=', self.id)]
+        liste_bon_reception=self.bon_commande_id.bon_reception_ids.mapped("id")
+        action['domain'] = [('bon_reception_id', 'in', liste_bon_reception)]
 
         return action
 
