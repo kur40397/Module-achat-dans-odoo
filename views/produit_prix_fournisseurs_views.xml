@@ -1,9 +1,37 @@
 
 <odoo>
+
+<record id="view_search_produit_fournisseur" model="ir.ui.view">
+    <field name="name">module_achat.product.template.search</field>
+    <field name="model">product.template</field>
+    <field name="arch" type="xml">
+         <search string="Recherche produit">
+             <field name="name"/>
+             <field name="default_code"/>
+
+             <filter name="type_marchandise" string="type marchandise" domain="[('type','=','consu')]"/>
+             <filter name="type_service" string="type service" domain="[('type','=','service')]"/>
+             <filter name="type_combo" string="type combo" domain="[('type','=','combo')]"/>
+             <separator/>
+             <filter name="product_state_draft" string="etat brouillon" domain="[('state','=','draft')]"/>
+             <filter name="product_state_valide" string="etat valide" domain="[('state','=','valide')]"/>
+
+
+             <group expand="1" string="Group by">
+                 <filter name="group_by_type" string="grouper par type" context="{'group_by':'type'}"/>
+                 <filter name="group_by_mesure" string="grouper par mesure" context="{'group_by':'uom_po_id'}"/>
+                 <filter name="group_by_norme" string="grouper par norme" context="{'group_by':'norme'}"/>
+                 <filter name="group_by_categ_id" string="grouper par category" context="{'group_by':'categ_id'}"/>
+             </group>
+
+         </search>
+    </field>
+
+</record>
+
 <record id="view_form_le_produit_prix_fournisseur" model="ir.ui.view">
     <field name="name">module_achat.product.template.form</field>
     <field name="model">product.template</field>
-    <field name="priority">120</field>
     <field name="arch" type="xml">
         <form>
             <header>
@@ -35,6 +63,7 @@
                     <page name="Prix fournisseurs">
                          <field name="prix_fournisseur_ids" readonly="state == 'valide'" >
                            <list editable="bottom">
+                             <field name="reference_fournisseur"/>
                              <field name="ref_fournisseur" />
                              <field name="prix_unitaire" />
                              <field name="devise_id" />
@@ -56,6 +85,7 @@
              <field name="name"/>
              <field name="default_code"/>
              <field name="norme"/>
+             <field name="uom_po_id"/>
              <field name="categ_id"/>
              <field name="weight"/>
              <field name="volume"/>

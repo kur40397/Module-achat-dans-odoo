@@ -7,16 +7,16 @@ from odoo.exceptions import UserError
 class BonCommande(models.Model):
     _name = "module_achat.bon_commande"
     numero_bon_commande=fields.Char(string="Numero bon commande")
-    ref_fournisseur=fields.Many2one("res.partner",string="Fournisseur")
-    code_projet=fields.Many2one("project.project",string="Projet")
-    devise =fields.Many2one("res.currency","Devise")
+    ref_fournisseur=fields.Many2one("res.partner",string="Fournisseur",required=True)
+    code_projet=fields.Many2one("project.project",string="Projet",required=True)
+    devise =fields.Many2one("res.currency","Devise",required=True)
 
     mode_reception =fields.Selection(selection=[
         ("global","Globale"),
         ("partielle","Partielle")
-    ],string="Mode réception")
-    date_bon_commande=fields.Date(string="Date bon commande")
-    date_reception=fields.Date(string="Date réception")
+    ],string="Mode réception",default="global",required=True)
+    date_bon_commande=fields.Date(string="Date bon commande",required=True)
+    date_reception=fields.Date(string="Date réception",required=True)
     state=fields.Selection([
         ('draft','Brouillon'),
         ('valide','Valide'),
@@ -26,8 +26,8 @@ class BonCommande(models.Model):
         ("especes","Espèces"),
         ("cheque","Chèque"),
         ("carte_bancaire","Carte bancaire")
-    ],string="Mode paiement",copy=False)
-    condition_de_paiement=fields.Many2one("account.payment.term",string="Condition de paiement")
+    ],string="Mode paiement",copy=False,default="virement_bancaire",required=True)
+    condition_de_paiement=fields.Many2one("account.payment.term",string="Condition de paiement",required=True)
     total_ht =fields.Float(string="Total HT",compute="_compute_total",store=True)
     tva=fields.Float(default=0.2)
     total_ttc =fields.Float(string="Total TTC",compute="_compute_total",store=True)
@@ -42,8 +42,8 @@ class BonCommande(models.Model):
         ("local", "bon de commande local"),
         ("international", "bon de commande international")
     ], default="local",string="Type de commande")
-    Incoterm=fields.Many2one("account.incoterms",string="Incoterm")
-    charge_internationales=fields.Float(string="Charge internationales")
+    Incoterm=fields.Many2one("account.incoterms",string="Incoterm",required=True)
+    charge_internationales=fields.Float(string="Charge internationales",required=True)
     total_internationales=fields.Float(string="Total international")
 
     @api.depends("bon_reception_ids")
@@ -60,28 +60,19 @@ class BonCommande(models.Model):
 
     def action_imprimer_bon_commande(self):
         pass
-
-
-
     def action_valider_formulaire(self):
-
-       if not self.ref_fournisseur:
-           raise UserError("Veuillez ajouter le fournisseur")
-       if not self.code_projet:
-           raise UserError("Veuillez ajouter le code projet")
-       if not self.date_bon_commande:
-           raise UserError("Veuillez ajouter la date de commande")
-       if not self.date_reception :
-           raise UserError("Veuillez ajouter la date de reception")
+       erreur = []
        if  self.date_reception < self.date_bon_commande :
-           raise UserError("La date de bon de commande doit être inférieure ou égale à la date de réception")
+           erreur.append("La date de bon de commande doit être inférieure ou égale à la date de réception")
        if not self.ligne_bon_commandes_ids:
-          raise UserError("Veuillez ajouter des lignes de commande")
+          erreur.append("Veuillez ajouter des lignes de commande")
        else:
            for ligne_cmd in self.ligne_bon_commandes_ids:
              if not ligne_cmd.produit_id or ligne_cmd.quantite == 0 or ligne_cmd.prix_unitaire==0:
-               raise UserError("chaque ligne doit avoire une quantité , une quantité et un prix unitaire ")
-
+               erreur.append("chaque ligne doit avoire une quantité , une quantité et un prix unitaire ")
+       if len(erreur) != 0:
+           # prend chaque element de la liste et kay7ot binathom had le separateur
+           raise UserError("\n".join(erreur))
        self.write(
            {
                "state":"valide"
