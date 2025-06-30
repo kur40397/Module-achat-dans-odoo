@@ -9,7 +9,12 @@
                 <field name="bon_reception_id"/>
                 <field name="produit_id" />
 
-
+                <filter name="etat_draft_ligne_stock" string="Etat draft" domain="[('state','=','draft')]"/>
+                <filter name="etat_valide_ligne_stock" string="Etat valide" domain="[('state','=','valide')]"/>
+                <separator/>
+                <filter name="origin_reception" string="reception" domain="[('origin','=','reception')]"/>
+                <filter name="origin_manuelle" string="manuelle" domain="[('origin','=','manuelle')]"/>
+                <filter name="origin_inventaire" string="inventaire" domain="[('origin','=','inventaire')]"/>
 
                 <!-- filtre rapide -->
                 <group expand="1" string="Group by">
@@ -17,9 +22,39 @@
                     <filter name="group_by_produit" string="nom du produit" context="{'group_by':'produit_id'}" />
                     <filter name="group_by_location_id" string="emplacement" context="{'group_by':'location_id'}" />
                     <filter name="group_by_type_mouvement" string="mouvement" context="{'group_by':'type_mouvement'}" />
+                    <filter name="group_by_origin" string="origin" context="{'group_by':'origin'}"/>
+                    <filter name="group_by_state" string="Etat" context="{'group_by':'state'}"/>
                 </group>
             </search>
 
+        </field>
+    </record>
+    <record id="view_form_ligne_stock" model="ir.ui.view">
+        <field name="name">ligne_stock.form</field>
+        <field name="model">module_achat.ligne_stock</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_valider_ligne_stock" type="object" string="valider" invisible="state=='valide'" class="oe_highlight" />
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                       <group>
+                           <field name="ref_ligne_Stock"/>
+                           <field name="produit_id" />
+                           <field name="location_id" />
+                           <field name="bon_reception_id" invisible="origin!='reception'"/>
+                       </group>
+                       <group>
+                           <field name="type_mouvement"/>
+                           <field name="quantite"/>
+                           <field name="date"/>
+                           <field name="origin"/>
+                       </group>
+                    </group>
+                </sheet>
+            </form>
         </field>
     </record>
     <record id="view_list_ligne_stock" model="ir.ui.view">
@@ -28,12 +63,12 @@
         <field name="arch" type="xml">
             <list>
                 <field name="ref_ligne_Stock"/>
-                <field name="bon_reception_id"/>
+                <field name="origin" widget="badge"/>
                 <field name="produit_id" />
-                <field name="location_id" />
-                <field name="type_mouvement"  />
-                <field name="quantite" />
+                <field name="type_mouvement" widget="badge"/>
+                <field name="quantite"  />
                 <field name="date" />
+                <field name="state" widget="badge"/>
             </list>
         </field>
     </record>
@@ -41,7 +76,7 @@
         <!-- provoque l'ouverture dial une fenêtre -->
         <field name="name">Ligne de stock</field>
         <field name="res_model">module_achat.ligne_stock</field>
-        <field name="view_mode">list</field>
+        <field name="view_mode">list,form</field>
 
     </record>
 </odoo>

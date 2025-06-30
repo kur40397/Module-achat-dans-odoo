@@ -1,4 +1,5 @@
 from odoo import models , fields,api
+from datetime import date
 
 # la class de base des modèle de odoo
 class ligneStock(models.Model):
@@ -9,5 +10,33 @@ class ligneStock(models.Model):
     type_mouvement=fields.Many2one("stock.picking.type",string="Type de mouvement")
     quantite=fields.Integer("Quantite")
     date=fields.Date("Date")
+    origin=fields.Selection(
+        [
+            ("reception","automatique par réception"),
+            ("manuelle","saisie manuelle par l’utilisateur"),
+            ("inventaire","ajustement d’inventaire"),
+        ]
+    ,string="L'origin du mouvement",default="manuelle",readonly=True)
     bon_reception_id = fields.Many2one("module_achat.bon_reception", "bon de reception")
+    state=fields.Selection(
+        [
+            ("draft", "brouillon"),
+            ("valide","valide"),
+        ],default="draft"
+    )
 
+    def action_valider_ligne_stock(self):
+        self.write({
+            'state':'valide'
+        })
+        self.env["module_achat.ligne_stock"].create(
+            {
+                'produit_id': self.produit_id.id,
+                'bon_reception_id': None,
+                'quantite': self.quantite,
+                'type_mouvement': self.type_mouvement.id,
+                'location_id': self.location_id.id,
+                'date': date.today(),
+
+            }
+        )

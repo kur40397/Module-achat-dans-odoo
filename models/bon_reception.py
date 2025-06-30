@@ -60,7 +60,10 @@ class bonReception(models.Model):
                     'quantite': rec.quantite_recue,
                     'type_mouvement': type_mouvement,
                     'location_id': location,
-                    'date': date.today()
+                    'date': date.today(),
+                    'state':'valide',
+                      'origin':'reception'
+
                   }
                 )
         for rec in self.ligne_bon_receptions_ids:

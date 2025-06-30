@@ -5,4 +5,5 @@
     <menuitem id="menu_bon_reception" name="bon de reception" parent="root_module_achat" action="action_view_module_achat_bon_reception"/>
     <menuitem id="menu_bon_stock" name="Lignes de stock" parent="root_module_achat" action="action_view_ligne_stock"/>
     <menuitem id="menu_produit" name="Produits" parent="root_module_achat" action="action_view_produit_prix_fournisseurs"/>
+    <menuitem id="menu_inventaire" name="Inventaire" parent="root_module_achat" action="action_view_pivot_ligne_stock"/>
 </odoo>
