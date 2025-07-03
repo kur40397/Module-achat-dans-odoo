@@ -7,14 +7,19 @@ class ligneStock(models.Model):
     ref_ligne_Stock=fields.Char("reference ligne de stock")
     produit_id=fields.Many2one("product.product",string="Produit")
     location_id = fields.Many2one('stock.location', string="Emplacement")
-    type_mouvement=fields.Many2one("stock.picking.type",string="Type de mouvement")
+    mouvement=fields.Selection(
+        [
+            ('entree','Entree'),
+            ('sortie','Sortie'),
+        ]
+    )
     quantite=fields.Integer("Quantite")
     date=fields.Date("Date")
     origin=fields.Selection(
         [
             ("reception","automatique par réception"),
             ("manuelle","saisie manuelle par l’utilisateur"),
-            ("inventaire","ajustement d’inventaire"),
+
         ]
     ,string="L'origin du mouvement",default="manuelle",readonly=True)
     bon_reception_id = fields.Many2one("module_achat.bon_reception", "bon de reception")
@@ -34,7 +39,7 @@ class ligneStock(models.Model):
                 'produit_id': self.produit_id.id,
                 'bon_reception_id': None,
                 'quantite': self.quantite,
-                'type_mouvement': self.type_mouvement.id,
+                'mouvement': self.mouvement,
                 'location_id': self.location_id.id,
                 'date': date.today(),
 

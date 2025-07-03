@@ -87,12 +87,11 @@ class BonCommande(models.Model):
                'produit_id': rec.produit_id.id,
                'quantite_demandee': rec.quantite
            }))
-       type_operation = self.env['stock.picking.type'].search([('name', '=', 'Réceptions')]).id
        self.env['module_achat.bon_reception'].create({
            'date_reception': date.today(),
            'bon_commande_id': self.id,
            'fournisseur': self.ref_fournisseur.id,
-           'type_operation': type_operation,
+           'mouvement': "entree",
            'projet_id': self.code_projet.id,
            'ligne_bon_receptions_ids': ligne_vals,
        })

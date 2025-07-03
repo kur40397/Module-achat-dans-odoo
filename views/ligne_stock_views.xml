@@ -21,7 +21,7 @@
                     <filter name="group_by_bon_reception" string="bon de reception" context="{'group_by':'bon_reception_id'}" />
                     <filter name="group_by_produit" string="nom du produit" context="{'group_by':'produit_id'}" />
                     <filter name="group_by_location_id" string="emplacement" context="{'group_by':'location_id'}" />
-                    <filter name="group_by_type_mouvement" string="mouvement" context="{'group_by':'type_mouvement'}" />
+                    <filter name="group_by_type_mouvement" string="mouvement" context="{'group_by':'mouvement'}" />
                     <filter name="group_by_origin" string="origin" context="{'group_by':'origin'}"/>
                     <filter name="group_by_state" string="Etat" context="{'group_by':'state'}"/>
                 </group>
@@ -39,6 +39,10 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <h2>Stockage manuel</h2>
+                        <div class="oe_title mb24">
+                            <field name="mouvement" widget="radio" options="{'horizontal': true}"/>
+                        </div>
                     <group>
                        <group>
                            <field name="ref_ligne_Stock"/>
@@ -47,7 +51,7 @@
                            <field name="bon_reception_id" invisible="origin!='reception'"/>
                        </group>
                        <group>
-                           <field name="type_mouvement"/>
+
                            <field name="quantite"/>
                            <field name="date"/>
                            <field name="origin"/>
@@ -65,7 +69,7 @@
                 <field name="ref_ligne_Stock"/>
                 <field name="origin" widget="badge"/>
                 <field name="produit_id" />
-                <field name="type_mouvement" widget="badge"/>
+                <field name="mouvement" widget="badge"/>
                 <field name="quantite"  />
                 <field name="date" />
                 <field name="state" widget="badge"/>

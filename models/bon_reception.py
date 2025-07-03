@@ -10,7 +10,12 @@ class bonReception(models.Model):
     date_reception=fields.Date(string="Date reception")
     bon_commande_id=fields.Many2one("module_achat.bon_commande",string="bon de commande")
     fournisseur=fields.Many2one("res.partner",string="Fournisseur")
-    type_operation=fields.Many2one("stock.picking.type",string="Type de réception")
+    mouvement=fields.Selection(
+        [
+            ('entree','Entree'),
+            ('sortie','Sortie'),
+        ]
+    )
     controle_reception=fields.Selection([
         ('conforme', 'Conforme'),
         ('non_conforme', 'Non conforme'),
@@ -49,7 +54,7 @@ class bonReception(models.Model):
         self.write({
             'state': 'recu'
         })
-        type_mouvement = self.type_operation.id,
+
         location = self.location_id.id
         for rec in self.ligne_bon_receptions_ids:
             if rec.quantite_recue>0:
@@ -58,12 +63,11 @@ class bonReception(models.Model):
                     'produit_id': rec.produit_id.id,
                     'bon_reception_id': self.id,
                     'quantite': rec.quantite_recue,
-                    'type_mouvement': type_mouvement,
+                    'mouvement': 'entree',
                     'location_id': location,
                     'date': date.today(),
                     'state':'valide',
-                      'origin':'reception'
-
+                    'origin':'reception'
                   }
                 )
         for rec in self.ligne_bon_receptions_ids:
@@ -87,12 +91,12 @@ class bonReception(models.Model):
                     'quantite_demandee': rec.reste
                 }
                              ))
-        type_operation = self.env['stock.picking.type'].search([('name', '=', 'Réceptions')]).id
+
         self.env['module_achat.bon_reception'].create({
             'date_reception': date.today(),
             'bon_commande_id': self.bon_commande_id.id,
             'fournisseur': self.fournisseur.id,
-            'type_operation': type_operation,
+            'mouvement': 'entree',
             'projet_id': self.projet_id.id,
             "location_id":self.location_id.id,
             "controle_reception":self.controle_reception,
