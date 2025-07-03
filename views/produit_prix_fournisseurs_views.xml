@@ -1,37 +1,10 @@
 
 <odoo>
 
-<record id="view_search_produit_fournisseur" model="ir.ui.view">
-    <field name="name">module_achat.product.template.search</field>
-    <field name="model">product.template</field>
-    <field name="arch" type="xml">
-         <search string="Recherche produit">
-             <field name="name"/>
-             <field name="default_code"/>
-
-             <filter name="type_marchandise" string="type marchandise" domain="[('type','=','consu')]"/>
-             <filter name="type_service" string="type service" domain="[('type','=','service')]"/>
-             <filter name="type_combo" string="type combo" domain="[('type','=','combo')]"/>
-             <separator/>
-             <filter name="product_state_draft" string="etat brouillon" domain="[('state','=','draft')]"/>
-             <filter name="product_state_valide" string="etat valide" domain="[('state','=','valide')]"/>
-
-
-             <group expand="1" string="Group by">
-                 <filter name="group_by_type" string="grouper par type" context="{'group_by':'type'}"/>
-                 <filter name="group_by_mesure" string="grouper par mesure" context="{'group_by':'uom_po_id'}"/>
-                 <filter name="group_by_norme" string="grouper par norme" context="{'group_by':'norme'}"/>
-                 <filter name="group_by_categ_id" string="grouper par category" context="{'group_by':'categ_id'}"/>
-             </group>
-
-         </search>
-    </field>
-
-</record>
 
 <record id="view_form_le_produit_prix_fournisseur" model="ir.ui.view">
-    <field name="name">module_achat.product.template.form</field>
-    <field name="model">product.template</field>
+    <field name="name">module_achat.product.form</field>
+    <field name="model">module_achat.produit</field>
     <field name="arch" type="xml">
         <form>
             <header>
@@ -40,23 +13,18 @@
 
             </header>
             <sheet>
-                   <div class="oe_title">
-                        <field name="name" readonly="state == 'valide'"/>
-                        <field name="image_1920" widget="image" class="oe_avatar" readonly="state == 'valide'"/>
-                    </div>
+
                 <group>
 
                     <group>
 
-                        <field name="default_code" readonly="state == 'valide'"/>
-                        <field name="type" readonly="state == 'valide'"/>
-                        <field name="uom_po_id" readonly="state == 'valide'"/>
+                        <field name="nom" readonly="state == 'valide'"/>
+                        <field name="reference" readonly="state == 'valide'"/>
+                        <field name="categorie" readonly="state == 'valide'"/>
                     </group>
                     <group>
                         <field name="norme" readonly="state == 'valide'"/>
-                        <field name="categ_id" readonly="state == 'valide'"/>
-                        <field name="weight" readonly="state == 'valide'"/>
-                        <field name="volume" readonly="state == 'valide'"/>
+                        <field name="unite_mesure" readonly="state == 'valide'"/>
                     </group>
                 </group>
                 <notebook>
@@ -78,17 +46,15 @@
 
 </record>
     <record id="view_list_produit_prix_fournisseurs" model="ir.ui.view">
-         <field name="name">module_achat.product.template.list</field>
-         <field name="model">product.template</field>
+         <field name="name">module_achat.produit.list</field>
+         <field name="model">module_achat.produit</field>
          <field name="arch" type="xml">
             <list>
-             <field name="name"/>
-             <field name="default_code"/>
+             <field name="nom"/>
+             <field name="reference"/>
+             <field name="categorie"/>
              <field name="norme"/>
-             <field name="uom_po_id"/>
-             <field name="categ_id"/>
-             <field name="weight"/>
-             <field name="volume"/>
+             <field name="unite_mesure"/>
              <field name="state" widget="badge"/>
             </list>
          </field>
@@ -98,13 +64,15 @@
 
     <!--action liée au model pour ouvrir une vue-->
     <record id="action_view_produit_prix_fournisseurs" model="ir.actions.act_window">
-        <field name="name">Produits Fournisseur</field>
-        <field name="res_model">product.template</field>
+        <field name="name">Produits</field>
+        <field name="res_model">module_achat.produit</field>
         <field name="view_mode">list,form</field>
+        <!--
        <field name="view_ids" eval="[
         (5, 0, 0),
         (0, 0, {'view_mode': 'list', 'view_id': ref('view_list_produit_prix_fournisseurs')}),
         (0, 0, {'view_mode': 'form', 'view_id': ref('view_form_le_produit_prix_fournisseur')})
     ]"/>
+    -->
     </record>
 </odoo>
