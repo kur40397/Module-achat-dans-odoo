@@ -1,0 +1,13 @@
+<odoo>
+     <record id="seq_bon_commande" model="ir.sequence">
+          <!-- 🏷️ Nom affiché dans Odoo (facultatif, utile pour l'identification humaine) -->
+          <field name="name">sequence bon de commande</field>
+          <!-- 🧩 Code technique qui sera utilisé dans le code Python pour appeler cette séquence -->
+          <field name="code">module_achat.bon_commande</field>
+          <field name="prefix">BC/</field>
+          <field name="padding">4</field>
+          <!-- le démarrage a 1 -->
+          <field name="number_next">1</field>
+          <field name="number_increment">1</field>
+     </record>
+</odoo>

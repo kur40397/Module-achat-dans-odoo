@@ -69,7 +69,7 @@ class BonCommande(models.Model):
        else:
            for ligne_cmd in self.ligne_bon_commandes_ids:
              if not ligne_cmd.produit_id or ligne_cmd.quantite == 0 or ligne_cmd.prix_unitaire==0:
-               erreur.append("chaque ligne doit avoire une quantité , une quantité et un prix unitaire ")
+               erreur.append("Chaque ligne de commande doit contenir un produit, une quantité non nulle et un prix unitaire ")
        if len(erreur) != 0:
            # prend chaque element de la liste et kay7ot binathom had le separateur
            raise UserError("\n".join(erreur))
@@ -98,11 +98,14 @@ class BonCommande(models.Model):
 
     @api.depends("ligne_bon_commandes_ids")
     def _compute_total(self):
-        for rec in self:
-           rec.total_ht=sum(rec.ligne_bon_commandes_ids.mapped("prix_ht"))
-           # mapped : sert a récupérer une liste de valeurs a partir d'un
-           # ensemble d'enregistrement il suffit juste de préciser le champ
-           rec.total_ttc= rec.total_ht*0.2 +rec.total_ht
+        self.total_ht =sum(self.ligne_bon_commandes_ids.mapped("prix_ht"))
+        if self.type_commande =='local':
+         # mapped : sert a récupérer une liste de valeurs a partir d'un
+         # ensemble d'enregistrement il suffit juste de préciser le champ
+         self.total_ttc= self.total_ht*0.2 +self.total_ht
+        else:
+            self.total_internationales=self.total_ht +self.charge_internationales
+
 
 
 

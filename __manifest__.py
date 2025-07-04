@@ -9,6 +9,7 @@
         'views/bon_reception_views.xml',
         'views/inventaire_views.xml',
         'views/ligne_stock_views.xml',
+        'data/sequence.xml',
         'views/menu_view.xml',
         'security/ir.model.access.csv',
     ],
