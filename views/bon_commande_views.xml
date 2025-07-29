@@ -1,4 +1,5 @@
 <odoo>
+    <!--filtrer et chercher et group by-->
     <record id="view_search_bon_commande" model="ir.ui.view">
         <field name="name">module_achat.bon_commande.search</field>
         <field name="model">module_achat.bon_commande</field>
@@ -15,14 +16,12 @@
                    <filter name="filter_devise_par_mad" string="filtre en mad" domain="[('devise','=','MAD')]"  />
                    <filter name="filter_devise_par_dollar" string="filtre en dollar" domain="[('devise','=','USD')]"  />
 
-                   <filter name="mode_reception_global" string="Mode réception global" domain="[('mode_reception','=','global')]"  />
-                   <filter name="mode_reception_partielle" string="Mode réception partielle" domain="[('mode_reception','=','partielle')]"  />
+
 
                    <filter name="etat_draft" string="Etat draft" domain="[('state','=','draft')]"/>
                    <filter name="etat_valide" string="Etat valide" domain="[('state','=','valide')]"/>
 
-                   <filter name="reliquat" string="avec reliquat" domain="[('has_reliquat','=','true')]"/>
-                   <filter name="no_reliquat" string="sans reliquat" domain="[('has_reliquat','=','false')]"/>
+
 
                    <filter name="mode_paiement_virement_bancaire" string="Mode paiement par virement bancaire" domain="[('mode_paiement','=','virement_bancaire')]"/>
                    <filter name="mode_paiement_especes" string="Mode paiement par espèces" domain="[('mode_paiement','=','especes')]"/>
@@ -48,15 +47,13 @@
       <field name="arch" type="xml">
           <form>
               <header>
-                  <button name="action_valider_formulaire" type="object" string="valider" invisible="state=='valide'"  class="oe_highlight"/>
+                  <button name="action_valider_formulaire" type="object" string="valider" invisible="state=='valide'" class="oe_highlight"/>
                   <button name="action_imprimer_bon_commande" type="object" string="Imprimer bon de commande" invisible="state=='draft'" />
                   <field name="state" widget="statusbar"/>
               </header>
-              <sheet> <!-- sheet = la zone ou tu developpe ,    -->
-                  <!-- oe_button_box pour stilisé la zone qui regroupe les smart buttons -->
-                  <!-- button_box : un repère pour permettre a odoo de placer ces button dans le haut du formulaire -->
-                   <!--Type:object: appelle une méthode quand je clique le boutton -->
+              <sheet> <!--les champs a remplir -->
 
+                  <!-- bouton pour ouvrir le smart button -->
                   <div class="oe_button_box" name="button_box" invisible="state!='valide'">
                        <button
                                name="action_open_receptions"
@@ -64,20 +61,18 @@
                                class="oe_stat_button"
                                icon="fa-truck"
                        >
-                         <field name="count_bon_reception" widget="statinfo" string="Bon de reception"/>
-                           <!-- statinfo  pour affiché le compteur dans le bouton-->
                        </button>
 
                   </div>
+                  <!--formulaire -->
+                    <group> <!-- la création d'une ligne horizentale -->
 
-                    <group> <!-- pour créer une ligne horizentale-->
 
-                        <field name="type_commande" widget="radio" options="{'horizontal': true}" />
                          <group> <!-- pour créer une colonne -->
-                               <field name="numero_bon_commande" readonly="state=='valide'"/>
+                               <field name="numero_bon_commande" readonly="1" />
                                <field name="ref_fournisseur" readonly="state=='valide'"/>
                                <field name="code_projet"  readonly="state=='valide'"/>
-                               <field name="mode_reception" readonly="state=='valide'"/>
+
                                <field name="date_bon_commande" readonly="state=='valide'"/>
                                <field name="date_reception" readonly="state=='valide'"/>
                          </group>
@@ -85,17 +80,13 @@
                               <field name="mode_paiement" readonly="state=='valide'"/>
                               <field name="devise" readonly="state=='valide'"/>
                               <field name="condition_de_paiement" readonly="state=='valide'"/>
-                             <!-- bc national-->
-                              <field name="total_ht" readonly="state=='valide'" invisible="type_commande=='international'"/>
-                              <field name="total_ttc" readonly="state=='valide'" invisible="type_commande=='international'" />
-                              <!-- bc international-->
-                              <field name="Incoterm" readonly="state=='valide'" invisible="type_commande=='local'" />
-                              <field name="charge_internationales" readonly="state=='valide'" invisible="type_commande=='local'" />
-                              <field name="total_internationales" readonly="state=='valide'" invisible="type_commande=='local'" />
+                              <field name="total_ht" readonly="state=='valide'" />
+                              <field name="total_ttc" readonly="state=='valide'"  />
                         </group>
                     </group>
                      <!--partie des ongles-->
                      <notebook>
+                         <!-- ongle 1 partie ligne de commande -->
                          <page string="Lignes de commande">
                              <field name="ligne_bon_commandes_ids" readonly="state=='valide'">
                                  <list editable="bottom">
@@ -113,6 +104,7 @@
           </form>
       </field>
   </record>
+    <!-- liste de bon de cmd -->
     <record id="view_list_bon_commande" model="ir.ui.view">
         <field name="name">module_achat.bon_commande.list</field>
         <field name="model">module_achat.bon_commande</field>
@@ -126,7 +118,6 @@
                 <field name="total_ht"/>
                 <field name="total_ttc"/>
                 <field name="state" widget="badge" />
-                <field name="has_reliquat" widget="badge" />
             </list>
         </field>
     </record>

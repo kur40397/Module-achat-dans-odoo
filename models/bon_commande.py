@@ -3,6 +3,7 @@ from datetime import date
 
 from odoo.exceptions import UserError
 
+# la création du bon de commande
 
 class BonCommande(models.Model):
     _name = "module_achat.bon_commande"
@@ -10,11 +11,6 @@ class BonCommande(models.Model):
     ref_fournisseur=fields.Many2one("res.partner",string="Fournisseur",required=True)
     code_projet=fields.Many2one("project.project",string="Projet",required=True)
     devise =fields.Many2one("res.currency","Devise",required=True)
-
-    mode_reception =fields.Selection(selection=[
-        ("global","Globale"),
-        ("partielle","Partielle")
-    ],string="Mode réception",default="global",required=True)
     date_bon_commande=fields.Date(string="Date bon commande",required=True)
     date_reception=fields.Date(string="Date réception",required=True)
     state=fields.Selection([
@@ -32,34 +28,12 @@ class BonCommande(models.Model):
     tva=fields.Float(default=0.2)
     total_ttc =fields.Float(string="Total TTC",compute="_compute_total",store=True)
     ligne_bon_commandes_ids=fields.One2many("module_achat.ligne_bon_commande","bon_commande_id")
-    count_bon_reception=fields.Integer(compute="_compute_count_bon_reception")
     bon_reception_ids=fields.One2many("module_achat.bon_reception","bon_commande_id")
-    has_reliquat=fields.Selection([
-        ('true', 'Avec reliquat'),
-        ('false', 'Aucun reliquat')
-    ],compute="_compute_reliquat",string="État des reliquats",default='false',store=True)
-    type_commande = fields.Selection(selection=[
-        ("local", "bon de commande local"),
-        ("international", "bon de commande international")
-    ], default="local",string="Type de commande")
-    Incoterm=fields.Many2one("account.incoterms",string="Incoterm",required=True)
-    charge_internationales=fields.Float(string="Charge internationales",required=True)
-    total_internationales=fields.Float(string="Total international")
-
-    @api.depends("bon_reception_ids")
-    def _compute_reliquat(self):
-        for rec in self:
-          if rec.bon_reception_ids:
-              is_cmd_has_reliquat=rec.bon_reception_ids[0]
-              if is_cmd_has_reliquat:
-                  rec.has_reliquat='true'
-              else:
-                  rec.has_reliquat = 'false'
-          else:
-              rec.has_reliquat = 'false'
 
     def action_imprimer_bon_commande(self):
         pass
+
+    #  methode qui s'active lorsque tu t'appuit sur le bouton valider
     def action_valider_formulaire(self):
        erreur = []
        if  self.date_reception < self.date_bon_commande :
@@ -78,9 +52,12 @@ class BonCommande(models.Model):
                "state":"valide"
            }
        )
+       # on appel la sequence ici
+       self.numero_bon_commande=self.env['ir.sequence'].next_by_code('module_achat.bon_commande')
        ligne_vals=[]
+       # ajouter des bon de receptions
        for rec in self.ligne_bon_commandes_ids:
-           # le premier 0 ===> ajouter le deuxième 0
+           # le premier 0 ===> ajouter le bon de commande
            # le deuxième 0 ==> l'id de l'enregistrement
            ligne_vals.append((0, 0, {
                'ref_produit': rec.ref_prod,
@@ -91,27 +68,18 @@ class BonCommande(models.Model):
            'date_reception': date.today(),
            'bon_commande_id': self.id,
            'fournisseur': self.ref_fournisseur.id,
-           'mouvement': "entree",
            'projet_id': self.code_projet.id,
            'ligne_bon_receptions_ids': ligne_vals,
        })
-
+    # le calcul du total ht et total ttc
     @api.depends("ligne_bon_commandes_ids")
     def _compute_total(self):
         self.total_ht =sum(self.ligne_bon_commandes_ids.mapped("prix_ht"))
-        if self.type_commande =='local':
-         # mapped : sert a récupérer une liste de valeurs a partir d'un
-         # ensemble d'enregistrement il suffit juste de préciser le champ
-         self.total_ttc= self.total_ht*0.2 +self.total_ht
-        else:
-            self.total_internationales=self.total_ht +self.charge_internationales
+
+        self.total_ttc= self.total_ht*0.2 +self.total_ht
 
 
-
-
-    def _compute_count_bon_reception(self):
-        self.count_bon_reception=len(self.bon_reception_ids)
-
+    # action pour ouvrir le bon de reception
     def action_open_receptions(self):
         self.ensure_one()
         action=self.env.ref("Module_Achat.action_view_module_achat_bon_reception",raise_if_not_found=False).read()[0]
@@ -138,7 +106,7 @@ class LigneBonCommande(models.Model):
     prix_ht=fields.Float("Total" ,compute="_compute_total")
     bon_commande_id=fields.Many2one("module_achat.bon_commande")
 
-    @api.depends("prix_unitaire","quantite")
+    @api.depends("prix_unitaire")
     def _compute_total(self):
         for rec in self:
             rec.prix_ht=rec.prix_unitaire*rec.quantite

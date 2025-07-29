@@ -10,28 +10,23 @@ class bonReception(models.Model):
     date_reception=fields.Date(string="Date reception")
     bon_commande_id=fields.Many2one("module_achat.bon_commande",string="bon de commande")
     fournisseur=fields.Many2one("res.partner",string="Fournisseur")
-    mouvement=fields.Selection(
-        [
-            ('entree','Entree'),
-            ('sortie','Sortie'),
-        ]
-    )
+
     controle_reception=fields.Selection([
         ('conforme', 'Conforme'),
         ('non_conforme', 'Non conforme'),
         ('partiel', 'Partiellement conforme'),
-    ], string="Contrôle réception",required=True)
+    ], string="Contrôle réception",required=True,default="conforme")
     projet_id=fields.Many2one("project.project",string="projet")
     state=fields.Selection([
         ('brouillon','Brouillon'),
         ('recu','reçu')
     ],default='brouillon')
 
-    location_id = fields.Many2one('stock.location', string="Emplacement",required=True)
+    location_id = fields.Many2one('stock.location', string="Emplacement")
     ligne_bon_receptions_ids=fields.One2many("module_achat.ligne_bon_reception","bon_reception_id")
     ligne_stock_ids=fields.One2many("module_achat.ligne_stock","bon_reception_id")
     count_ligne_stock=fields.Integer(compute="_compute_count_ligne_stock")
-    has_reliquat=fields.Boolean(default=False)
+
 
     def valider_bon_reception(self):
         erreur=[]
@@ -49,7 +44,6 @@ class bonReception(models.Model):
             # la concaténation en rendent le caractère comme un séparateur
             raise UserError("\n".join(erreur))
 
-        self.has_reliquat = True
 
         self.write({
             'state': 'recu'
@@ -70,39 +64,8 @@ class bonReception(models.Model):
                     'origin':'reception'
                   }
                 )
-        for rec in self.ligne_bon_receptions_ids:
-            if rec.reste > 0:
-                self.has_reliquat = True
-                return
 
 
-    def creer_reliquat(self):
-        self.has_reliquat = False
-        action = self.env.ref("Module_Achat.action_view_module_achat_bon_reception", raise_if_not_found=False).read()[0]
-        action['domain'] = [('bon_commande_id', '=', self.bon_commande_id.id)]
-        list=[]
-        for rec in self.ligne_bon_receptions_ids:
-            # le premier 0 ===> ajouter le deuxième 0
-            # le deuxième 0 ==> l'id de l'enregistrement
-            if rec.reste > 0:
-                list.append((0, 0, {
-                    'ref_produit': rec.ref_produit,
-                    'produit_id': rec.produit_id.id,
-                    'quantite_demandee': rec.reste
-                }
-                             ))
-
-        self.env['module_achat.bon_reception'].create({
-            'date_reception': date.today(),
-            'bon_commande_id': self.bon_commande_id.id,
-            'fournisseur': self.fournisseur.id,
-            'mouvement': 'entree',
-            'projet_id': self.projet_id.id,
-            "location_id":self.location_id.id,
-            "controle_reception":self.controle_reception,
-            'ligne_bon_receptions_ids': list,
-        })
-        return action
 
     @api.depends("ligne_stock_ids")
     def _compute_count_ligne_stock(self):
@@ -110,7 +73,6 @@ class bonReception(models.Model):
 
        self.count_ligne_stock=len(self.bon_commande_id.bon_reception_ids.mapped("ligne_stock_ids"))
        # parcours chaque bon_reception dans la liste récupère toute les ligne de stock et les fusionnee en un seule record set
-       print(self.bon_commande_id.bon_reception_ids.ligne_stock_ids)
 
 
     def action_open_stock(self):

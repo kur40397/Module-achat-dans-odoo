@@ -20,16 +20,13 @@
                   <filter name="filter_state_brouillon" string="Brouillon" domain="[('state','=','brouillon')]"/>
                   <filter name="filter_state_recu" string="Recu" domain="[('state','=','recu')]"/>
                    <separator/>
-                  <!-- Filter has_reliquat -->
-                  <filter name="has_reliquat" string="Reliquat" domain="[('has_reliquat','=','True')]"/>
-                  <filter name="has_no_reliquat" string="Pas de reliquat" domain="[('has_reliquat','=','False')]"/>
+
                   <!-- group by -->
                   <group expand="1" string="Group by">
                     <filter name="group_by_bon_commande_id" string="group par commande" context="{'group_by':'bon_commande_id'}"/>
                     <filter name="group_controle_reception" string="group par controle_reception" context="{'group_by':'controle_reception'}" />
                     <filter name="group_by_projet_id" string="group par projet_id" context="{'group_by':'projet_id'}"/>
                     <filter name="group_by_state" string="group par etat" context="{'group_by':'state'}"/>
-                    <filter name="group_by_has_reliquat" string="group par reliquat" context="{'group_by':'has_reliquat'}"/>
                   </group>
               </search>
           </field>
@@ -41,7 +38,6 @@
       <form>
           <header>
               <button name="valider_bon_reception" type="object" string="valider" invisible="state=='recu'"  class="oe_highlight"/>
-              <button name="creer_reliquat" type="object" string="creer reliquat" invisible="not has_reliquat" />
 
               <field name="state" widget="statusbar"/>
           </header>
@@ -66,7 +62,6 @@
              </group>
              <group>
                  <field name="date_reception" readonly="state=='recu'"/>
-                 <field name="mouvement" readonly="state=='recu'"/>
                  <field name="controle_reception" readonly="state=='recu'"/>
                  <field name="projet_id" readonly="state=='recu'"/>
              </group>
