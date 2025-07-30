@@ -6,23 +6,24 @@ from odoo.exceptions import  UserError
 
 class bonReception(models.Model):
     _name = "module_achat.bon_reception"
-    ref_bon_reception=fields.Char(string="reference bon reception")
-    date_reception=fields.Date(string="Date reception")
-    bon_commande_id=fields.Many2one("module_achat.bon_commande",string="bon de commande")
-    fournisseur=fields.Many2one("res.partner",string="Fournisseur")
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    ref_bon_reception=fields.Char(string="reference bon reception",tracking=True)
+    date_reception=fields.Date(string="Date reception",tracking=True)
+    bon_commande_id=fields.Many2one("module_achat.bon_commande",string="bon de commande",tracking=True)
+    fournisseur=fields.Many2one("res.partner",string="Fournisseur",tracking=True)
 
     controle_reception=fields.Selection([
         ('conforme', 'Conforme'),
         ('non_conforme', 'Non conforme'),
         ('partiel', 'Partiellement conforme'),
-    ], string="Contrôle réception",required=True,default="conforme")
-    projet_id=fields.Many2one("project.project",string="projet")
+    ], string="Contrôle réception",required=True,default="conforme",tracking=True)
+    projet_id=fields.Many2one("project.project",string="projet",tracking=True)
     state=fields.Selection([
         ('brouillon','Brouillon'),
         ('recu','reçu')
-    ],default='brouillon')
+    ],default='brouillon',tracking=True)
 
-    location_id = fields.Many2one('stock.location', string="Emplacement")
+    location_id = fields.Many2one('stock.location', string="Emplacement",tracking=True)
     ligne_bon_receptions_ids=fields.One2many("module_achat.ligne_bon_reception","bon_reception_id")
     ligne_stock_ids=fields.One2many("module_achat.ligne_stock","bon_reception_id")
     count_ligne_stock=fields.Integer(compute="_compute_count_ligne_stock")

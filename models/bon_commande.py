@@ -7,26 +7,29 @@ from odoo.exceptions import UserError
 
 class BonCommande(models.Model):
     _name = "module_achat.bon_commande"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    # mail.thread : pour les messages et suivre les notification & tracker les modification
+    # mail.activity.mixin : planifier les tâches
     numero_bon_commande=fields.Char(string="Numero bon commande")
-    ref_fournisseur=fields.Many2one("res.partner",string="Fournisseur",required=True)
-    code_projet=fields.Many2one("project.project",string="Projet",required=True)
-    devise =fields.Many2one("res.currency","Devise",required=True)
-    date_bon_commande=fields.Date(string="Date bon commande",required=True)
-    date_reception=fields.Date(string="Date réception",required=True)
+    ref_fournisseur=fields.Many2one("res.partner",string="Fournisseur",required=True,tracking=True)
+    code_projet=fields.Many2one("project.project",string="Projet",required=True,tracking=True)
+    devise =fields.Many2one("res.currency","Devise",required=True,tracking=True)
+    date_bon_commande=fields.Date(string="Date bon commande",required=True,tracking=True)
+    date_reception=fields.Date(string="Date réception",required=True,tracking=True)
     state=fields.Selection([
         ('draft','Brouillon'),
         ('valide','Valide'),
-    ],default="draft")
+    ],default="draft",tracking=True)
     mode_paiement=fields.Selection([
         ("virement_bancaire","Virement bancaire"),
         ("especes","Espèces"),
         ("cheque","Chèque"),
         ("carte_bancaire","Carte bancaire")
-    ],string="Mode paiement",copy=False,default="virement_bancaire",required=True)
-    condition_de_paiement=fields.Many2one("account.payment.term",string="Condition de paiement",required=True)
-    total_ht =fields.Float(string="Total HT",compute="_compute_total",store=True)
+    ],string="Mode paiement",copy=False,default="virement_bancaire",required=True,tracking=True)
+    condition_de_paiement=fields.Many2one("account.payment.term",string="Condition de paiement",required=True,tracking=True)
+    total_ht =fields.Float(string="Total HT",compute="_compute_total",store=True,tracking=True)
     tva=fields.Float(default=0.2)
-    total_ttc =fields.Float(string="Total TTC",compute="_compute_total",store=True)
+    total_ttc =fields.Float(string="Total TTC",compute="_compute_total",store=True,tracking=True)
     ligne_bon_commandes_ids=fields.One2many("module_achat.ligne_bon_commande","bon_commande_id")
     bon_reception_ids=fields.One2many("module_achat.bon_reception","bon_commande_id")
 

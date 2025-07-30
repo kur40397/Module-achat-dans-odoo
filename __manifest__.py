@@ -1,7 +1,7 @@
 {
     'name': 'Module Achat de Olympe industries',
     'version': '1.0',
-    'depends': ['base','project'],
+    'depends': ['base','project','mail'],
     # Déclare les vues indépendantes en premier, et les vues qui en dépendent ensuite.
     'data': [
         'views/produit_prix_fournisseurs_views.xml',
