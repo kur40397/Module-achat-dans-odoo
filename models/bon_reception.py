@@ -1,13 +1,14 @@
 from odoo import models , fields,api
 from datetime import date
 
+from odoo.api import readonly
 from odoo.exceptions import  UserError
 
 
 class bonReception(models.Model):
     _name = "module_achat.bon_reception"
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    ref_bon_reception=fields.Char(string="reference bon reception",tracking=True)
+    ref_bon_reception=fields.Char(string="reference bon reception",readonly=True)
     date_reception=fields.Date(string="Date reception",tracking=True)
     bon_commande_id=fields.Many2one("module_achat.bon_commande",string="bon de commande",tracking=True)
     fournisseur=fields.Many2one("res.partner",string="Fournisseur",tracking=True)
@@ -50,11 +51,14 @@ class bonReception(models.Model):
             'state': 'recu'
         })
 
+        self.ref_bon_reception=self.env['ir.sequence'].next_by_code('module_achat.bon_reception')
+
         location = self.location_id.id
         for rec in self.ligne_bon_receptions_ids:
             if rec.quantite_recue>0:
                 self.env['module_achat.ligne_stock'].create(
                   {
+                    "ref_ligne_Stock":self.env['ir.sequence'].next_by_code('module_achat.ligne_stock'),
                     'produit_id': rec.produit_id.id,
                     'bon_reception_id': self.id,
                     'quantite': rec.quantite_recue,

@@ -42,6 +42,15 @@
               <field name="state" widget="statusbar"/>
           </header>
          <sheet>
+         <div class="oe_title">
+          <h2>Bon de reception</h2>
+          <h1>
+            <span>
+               <field name="ref_bon_reception"/>
+            </span>
+          </h1>
+         </div>
+
                <div class="oe_button_box" name="button_box" invisible="state!='recu'">
                        <button
                                name="action_open_stock"
@@ -55,7 +64,6 @@
                </div>
            <group>
              <group>
-               <field name="ref_bon_reception" readonly="state=='recu'"/>
                <field name="bon_commande_id" readonly="state=='recu'"/>
                <field name="fournisseur" readonly="state=='recu'"/>
                <field name="location_id" readonly="state=='recu'"/>

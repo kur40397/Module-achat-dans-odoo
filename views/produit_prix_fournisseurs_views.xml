@@ -10,16 +10,20 @@
             <header>
                  <button name="valider_produit" type="object" string="valider" invisible="state == 'valide'" class="oe_highlight" />
                 <field name="state" widget="statusbar" />
-
             </header>
             <sheet>
-
+                  <div class="oe_title">
+                      <!-- pour stilyser la zone du texte -->
+                      <h2>Produit</h2>
+                      <h1>
+                          <span>
+                              <field name="reference"/>
+                          </span>
+                      </h1>
+                  </div>
                 <group>
-
                     <group>
-
                         <field name="nom" readonly="state == 'valide'"/>
-                        <field name="reference" readonly="state == 'valide'"/>
                         <field name="categorie" readonly="state == 'valide'"/>
                     </group>
                     <group>
@@ -37,10 +41,10 @@
                              <field name="devise_id" />
                            </list>
                          </field>
-
                     </page>
                 </notebook>
             </sheet>
+            <chatter/>
         </form>
     </field>
 

@@ -10,7 +10,7 @@ class BonCommande(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     # mail.thread : pour les messages et suivre les notification & tracker les modification
     # mail.activity.mixin : planifier les tâches
-    numero_bon_commande=fields.Char(string="Numero bon commande")
+    numero_bon_commande=fields.Char(string="Numero bon commande",readonly=True)
     ref_fournisseur=fields.Many2one("res.partner",string="Fournisseur",required=True,tracking=True)
     code_projet=fields.Many2one("project.project",string="Projet",required=True,tracking=True)
     devise =fields.Many2one("res.currency","Devise",required=True,tracking=True)

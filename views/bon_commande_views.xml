@@ -52,6 +52,15 @@
                   <field name="state" widget="statusbar"/>
               </header>
               <sheet> <!--les champs a remplir -->
+                  <div class="oe_title">
+                      <!-- pour stilyser la zone du texte -->
+                      <h2>Bon de commande</h2>
+                      <h1>
+                          <span>
+                              <field name="numero_bon_commande"/>
+                          </span>
+                      </h1>
+                  </div>
 
                   <!-- bouton pour ouvrir le smart button -->
                   <div class="oe_button_box" name="button_box" invisible="state!='valide'">
@@ -69,10 +78,8 @@
 
 
                          <group> <!-- pour créer une colonne -->
-                               <field name="numero_bon_commande" readonly="1" />
                                <field name="ref_fournisseur" readonly="state=='valide'"/>
                                <field name="code_projet"  readonly="state=='valide'"/>
-
                                <field name="date_bon_commande" readonly="state=='valide'"/>
                                <field name="date_reception" readonly="state=='valide'"/>
                          </group>

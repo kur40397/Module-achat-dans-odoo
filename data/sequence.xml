@@ -1,4 +1,5 @@
 <odoo>
+     <!-- Sequence bon de commande  -->
      <record id="seq_bon_commande" model="ir.sequence">
           <!-- 🏷️ Nom affiché dans Odoo (facultatif, utile pour l'identification humaine) -->
           <field name="name">sequence bon de commande</field>
@@ -10,4 +11,50 @@
           <field name="number_next">1</field>
           <field name="number_increment">1</field>
      </record>
+
+     <!-- sequence de bon de reception  -->
+     <record id="seq_bon_reception" model="ir.sequence">
+       <!-- le nom technique de la sequence -->
+       <field name="name">sequence bon de reception </field>
+       <!--code howa l'intermédiaire entre le code xml et code python  -->
+       <field name="code">module_achat.bon_reception</field>
+
+       <field name="prefix">BR/</field>
+       <field name="padding">4</field>
+           <!-- le démarrage a 1 -->
+       <field name="number_next">1</field>
+       <field name="number_increment">1</field>
+     </record>
+
+     <!-- sequence de ligne de stock -->
+
+     <record id="seq_ligne_stock" model="ir.sequence">
+
+       <!-- le nom technique de la sequence -->
+       <field name="name">sequence de ligne de stock </field>
+
+       <!--code howa l'intermédiaire entre le code xml et code python  -->
+       <field name="code">module_achat.ligne_stock</field>
+
+       <field name="prefix">LS/</field>
+       <field name="padding">4</field>
+           <!-- le démarrage a 1 -->
+       <field name="number_next">1</field>
+       <field name="number_increment">1</field>
+     </record>
+
+     <!--sequence de produit -->
+     <record id="seq_produit" model="ir.sequence">
+          <!-- le nom technique de la seq -->
+          <field name="name">sequence de produit</field>
+          <field name="code">module_achat.produit</field>
+          <field name="prefix">PR/</field>
+          <field name="padding">4</field>
+           <!-- le démarrage a 1 -->
+          <field name="number_next">1</field>
+
+          <field name="number_increment">1</field>
+
+     </record>
+
 </odoo>
