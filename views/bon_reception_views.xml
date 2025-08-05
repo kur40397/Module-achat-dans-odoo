@@ -38,7 +38,7 @@
       <form>
           <header>
               <button name="valider_bon_reception" type="object" string="valider" invisible="state=='recu'"  class="oe_highlight"/>
-
+              <button name="creer_un_reliquat" type="object" string="creer un reliquat" invisible="state=='brouillon' and not has_reliquat" />
               <field name="state" widget="statusbar"/>
           </header>
          <sheet>

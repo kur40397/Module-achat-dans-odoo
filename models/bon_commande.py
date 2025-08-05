@@ -1,3 +1,5 @@
+from itertools import count
+
 from odoo import models , fields,api
 from datetime import date
 
@@ -25,16 +27,28 @@ class BonCommande(models.Model):
         ("especes","Espèces"),
         ("cheque","Chèque"),
         ("carte_bancaire","Carte bancaire")
-    ],string="Mode paiement",copy=False,default="virement_bancaire",required=True,tracking=True)
+    ],string="Mode paiement",copy=False,default="virement_bancaire",tracking=True)
+
+    politique_reception = fields.Selection(
+        [
+            ('reliquat', 'Accepter reliquat'),
+            ('sans_reliquat', 'Refuser reliquat')
+        ],string="Politique de reception",default="reliquat",tracking=True)
+
     condition_de_paiement=fields.Many2one("account.payment.term",string="Condition de paiement",required=True,tracking=True)
     total_ht =fields.Float(string="Total HT",compute="_compute_total",store=True,tracking=True)
     tva=fields.Float(default=0.2)
     total_ttc =fields.Float(string="Total TTC",compute="_compute_total",store=True,tracking=True)
     ligne_bon_commandes_ids=fields.One2many("module_achat.ligne_bon_commande","bon_commande_id")
+    count_reception=fields.Integer(string="bon de reception",compute="_compute_count_reception",store=True)
     bon_reception_ids=fields.One2many("module_achat.bon_reception","bon_commande_id")
 
     def action_imprimer_bon_commande(self):
-        pass
+        action = self.env.ref("Module_Achat.action_bon_commande_report", raise_if_not_found=False).read()[0]
+        return action
+    @api.depends("bon_reception_ids")
+    def _compute_count_reception(self):
+        self.count_reception=len(self.bon_reception_ids)
 
     #  methode qui s'active lorsque tu t'appuit sur le bouton valider
     def action_valider_formulaire(self):
@@ -88,7 +102,13 @@ class BonCommande(models.Model):
         action=self.env.ref("Module_Achat.action_view_module_achat_bon_reception",raise_if_not_found=False).read()[0]
 
         action['domain']=[('bon_commande_id', '=', self.id)]
-
+        # le type de vue affiché dépend de la politique de réception choisie
+        if self.politique_reception == 'sans_reliquat':
+            # on force l'action a afficher une vue précise
+            # ID pour récuperer l'id de cette vue dans la base de données Odoo
+            # external id : l'id de la vue dans les fichier xml
+            # 'form' type de formulaire a afficher
+           action['views']=[(self.env.ref('Module_Achat.view_form_module_achat_bon_reception').id, 'form')]
 
         return action
 

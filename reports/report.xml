@@ -1,0 +1,14 @@
+<odoo>
+    <!--    action telecharger rapport -->
+    <record id="action_bon_commande_report" model="ir.actions.report">
+        <field name="name">rapport bon de commande</field>
+        <field name="model">module_achat.bon_commande</field>
+        <field name="report_type">qweb-pdf</field>
+        <!-- internal name , un lien entre la template et l'action  -->
+        <field name="report_name">Module_Achat.report_bon_commande</field>
+
+        <field name="report_file">Module_Achat.report_bon_commande</field>
+
+    </record>
+
+</odoo>

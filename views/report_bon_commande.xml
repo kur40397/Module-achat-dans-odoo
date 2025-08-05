@@ -1,3 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <template id="report_bon_commande">
+       <t t-call="web.external_layout">
+        <main>
+         <div class="page">
+           <t t-foreach="docs" t-as="doc">
 
+                 <!-- pour définir une page A4 -->
+
+                 <h2>Bon de commande : <t t-esc="doc.numero_bon_commande" t-class="text-align: center;" /></h2>
+                 <p>Fournisseur : <t t-esc="doc.ref_fournisseur.name" /></p>
+                 <p>Date commande : <t t-esc="doc.date_bon_commande"/> </p>
+                 <table class="table table-borderless">
+                       <thead>
+                           <tr>
+                               <th>Reference</th>
+                               <th>Description</th>
+                               <th>Quantité</th>
+                               <th>Unite mesure</th>
+                               <th>Prix unitaire</th>
+                               <th>prix hors taxe</th>
+                           </tr>
+                       </thead>
+                       <tbody >
+                            <t t-foreach="doc.ligne_bon_commandes_ids" t-as="line">
+                                    <tr>
+                                        <td><span t-esc="line.ref_prod" /></td>
+                                        <td><span t-esc="line.produit_id.name" /></td>
+                                        <td><span t-esc="line.quantite" /></td>
+                                        <td><span t-esc="line.unite_mesure.name" /></td>
+                                        <td><span t-esc="line.prix_unitaire" /></td>
+                                        <td><span t-esc="line.prix_ht" /></td>
+                                    </tr>
+                            </t>
+                           <tr>
+                               <td colspan="6" class="text-end">
+                               <strong>Total HT :</strong> <span t-esc="doc.total_ht"   />
+                               </td>
+                           </tr>
+                           <tr>
+                               <td colspan="6" class="text-end">
+                                   <strong>TVA :</strong><span > 20%</span>
+                               </td>
+                           </tr>
+                           <tr>
+                               <td colspan="6" class="text-end">
+                                   <strong>Total TTC :</strong> <span esc="doc.total_ttc"/>
+                               </td>
+                           </tr>
+                       </tbody>
+                 </table>
+               </t>
+
+           </div>
+           </main>
+        </t>
+    </template>
 </odoo>

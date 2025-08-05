@@ -28,6 +28,8 @@ class bonReception(models.Model):
     ligne_bon_receptions_ids=fields.One2many("module_achat.ligne_bon_reception","bon_reception_id")
     ligne_stock_ids=fields.One2many("module_achat.ligne_stock","bon_reception_id")
     count_ligne_stock=fields.Integer(compute="_compute_count_ligne_stock")
+    has_reliquat=fields.Boolean(default=False)
+
 
 
     def valider_bon_reception(self):
@@ -50,6 +52,11 @@ class bonReception(models.Model):
         self.write({
             'state': 'recu'
         })
+        reste=sum(self.ligne_bon_receptions_ids.mapped('reste'))
+        if self.bon_commande_id.politique_reception=='reliquat' and reste == 0 :
+            self.write({
+                'has_reliquat':True
+            })
 
         self.ref_bon_reception=self.env['ir.sequence'].next_by_code('module_achat.bon_reception')
 
@@ -70,7 +77,8 @@ class bonReception(models.Model):
                   }
                 )
 
-
+    def creer_un_reliquat(self):
+        pass
 
     @api.depends("ligne_stock_ids")
     def _compute_count_ligne_stock(self):
