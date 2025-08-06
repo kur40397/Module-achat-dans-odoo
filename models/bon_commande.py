@@ -104,9 +104,9 @@ class BonCommande(models.Model):
         action['domain']=[('bon_commande_id', '=', self.id)]
         # le type de vue affiché dépend de la politique de réception choisie
         if self.politique_reception == 'sans_reliquat':
-            # on force l'action a afficher une vue précise
+            # on force l'action a afficher une vue précise par rapport a la politique de reception
             # ID pour récuperer l'id de cette vue dans la base de données Odoo
-            # external id : l'id de la vue dans les fichier xml
+            # external id : l'id de la vue dans les fichier xml , aussi l'heritage
             # 'form' type de formulaire a afficher
            action['views']=[(self.env.ref('Module_Achat.view_form_module_achat_bon_reception').id, 'form')]
 

@@ -17,7 +17,7 @@ class bonReception(models.Model):
         ('conforme', 'Conforme'),
         ('non_conforme', 'Non conforme'),
         ('partiel', 'Partiellement conforme'),
-    ], string="Contrôle réception",required=True,default="conforme",tracking=True)
+    ], string="Contrôle réception",default="conforme",tracking=True)
     projet_id=fields.Many2one("project.project",string="projet",tracking=True)
     state=fields.Selection([
         ('brouillon','Brouillon'),
@@ -53,7 +53,8 @@ class bonReception(models.Model):
             'state': 'recu'
         })
         reste=sum(self.ligne_bon_receptions_ids.mapped('reste'))
-        if self.bon_commande_id.politique_reception=='reliquat' and reste == 0 :
+        print(reste)
+        if self.bon_commande_id.politique_reception=='reliquat' and reste > 0 :
             self.write({
                 'has_reliquat':True
             })
@@ -78,7 +79,30 @@ class bonReception(models.Model):
                 )
 
     def creer_un_reliquat(self):
-        pass
+        ligne_vals=[]
+        count = len(self.bon_commande_id.bon_reception_ids)
+        for rec in self.ligne_bon_receptions_ids:
+            if rec.reste>0:
+                ligne_vals.append((0, 0, {
+                    'ref_produit': rec.ref_produit,
+                    'produit_id': rec.produit_id.id,
+                    'quantite_demandee': rec.quantite_demandee - rec.quantite_recue,
+                    'bon_reception_id':"reliquat "+ str(count) +" de "+self.ref_bon_reception,
+                }))
+
+
+        self.env['module_achat.bon_reception'].create(
+            {
+                'ref_bon_reception':"reliquat "+ str(count) +" de "+self.ref_bon_reception,
+                'date_reception':self.date_reception,
+                'bon_commande_id':self.bon_commande_id.id,
+                'fournisseur':self.fournisseur.id,
+                'projet_id':self.projet_id.id,
+                'location_id':self.location_id.id if self.location_id else None,
+                'ligne_bon_receptions_ids':ligne_vals,
+                'has_reliquat':False,
+            }
+        )
 
     @api.depends("ligne_stock_ids")
     def _compute_count_ligne_stock(self):
@@ -93,7 +117,6 @@ class bonReception(models.Model):
         action=self.env.ref("Module_Achat.action_view_ligne_stock",raise_if_not_found=False).read()[0]
         liste_bon_reception=self.bon_commande_id.bon_reception_ids.mapped("id")
         action['domain'] = [('bon_reception_id', 'in', liste_bon_reception)]
-
         return action
 
 

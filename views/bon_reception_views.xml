@@ -58,8 +58,8 @@
                                class="oe_stat_button"
                                icon="fa-truck"
                        >
-                         <field name="count_ligne_stock" widget="statinfo" string="Ligne stock"/>
-                           <!-- statinfo  pour affiché le compteur dans le bouton-->
+                         <field name="count_ligne_stock" widget="statinfo" />
+                           <!-- statinfo : pour affiché le compteur dans le bouton-->
                        </button>
                </div>
            <group>
